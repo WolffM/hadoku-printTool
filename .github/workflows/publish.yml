@@ -29,13 +29,6 @@ jobs:
           scope: '@wolffm'
           cache: 'pnpm'
 
-      - name: Configure npm for GitHub Packages
-        run: |
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.HADOKU_SITE_TOKEN }}" > ~/.npmrc
-          echo "@wolffm:registry=https://npm.pkg.github.com" >> ~/.npmrc
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.HADOKU_SITE_TOKEN }}
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
         env:
