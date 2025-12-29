@@ -6,7 +6,18 @@
       "Bash(pnpm lint:*)",
       "Bash(git init:*)",
       "Bash(git remote add:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(gh repo create:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh api:*)",
+      "Bash(pnpm exec husky:*)",
+      "Bash(npx husky install)",
+      "Bash(npx husky)",
+      "Bash(git config:*)"
     ]
   }
 }
