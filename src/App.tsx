@@ -36,7 +36,7 @@ export default function App(props: PrintToolProps = {}) {
     >
       <div className="printtool">
         <header className="printtool__header">
-          <h1>Print Tool</h1>
+          <h1>Hadoku Print Tool</h1>
 
           {/* Theme Picker */}
           <ConnectedThemePicker
