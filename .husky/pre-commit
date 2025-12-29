@@ -18,11 +18,8 @@ pnpm run format
 
 echo "✅ Linting and formatting complete!"
 
-# Bump version if src/, package.json, or build config changed
-echo "📦 Checking if version bump is needed..."
-
-if git diff --cached --name-only | grep -q -E "^(src/|package\.json|vite\.config\.|tsconfig\.)"; then
-  echo "🔄 Code or build config changes detected, bumping version..."
+# Always bump version on every commit
+echo "📦 Bumping version..."
 
 # Read current version from package.json
 current_version=$(node -p "require('./package.json').version")
@@ -51,14 +48,11 @@ fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
 
 echo "✅ Version bumped: $current_version → $new_version"
 
-  # Update lock file
-  pnpm install --lockfile-only
+# Update lock file
+pnpm install --lockfile-only
 
-  # Stage the version changes
-  git add package.json pnpm-lock.yaml
-else
-  echo "ℹ️  No code changes detected, skipping version bump"
-fi
+# Stage the version changes
+git add package.json pnpm-lock.yaml
 
 # Re-stage only the files that were originally staged (after lint/format may have modified them)
 # This avoids accidentally staging unrelated working directory changes
