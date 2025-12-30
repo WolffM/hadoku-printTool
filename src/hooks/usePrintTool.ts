@@ -15,7 +15,10 @@ import type {
   CalibrationGridKey,
   VariationPresetKey,
   ImageFile,
-  ProcessedResult
+  ProcessedResult,
+  CollagePoolImage,
+  CollageSettings,
+  CollageLayoutResult
 } from '../domain/types'
 import {
   DEFAULT_PAPER_SIZE,
@@ -25,6 +28,7 @@ import {
   DEFAULT_CALIBRATION_GRID,
   DEFAULT_CALIBRATION_DPI,
   DEFAULT_CALIBRATION_PRESET,
+  DEFAULT_COLLAGE_SETTINGS,
   PAPER_SIZES,
   TILE_SIZES
 } from '../domain/constants'
@@ -46,6 +50,9 @@ const initialState: PrintToolState = {
   calibrationDpi: DEFAULT_CALIBRATION_DPI,
   calibrationPreset: DEFAULT_CALIBRATION_PRESET,
   selectedVariationIndex: 0,
+  collageImages: [],
+  collageSettings: DEFAULT_COLLAGE_SETTINGS,
+  collageResult: null,
   isProcessing: false,
   result: null,
   error: null,
@@ -167,6 +174,52 @@ function reducer(state: PrintToolState, action: PrintToolAction): PrintToolState
         layoutInfo: action.payload
       }
 
+    case 'SET_COLLAGE_IMAGES':
+      return {
+        ...state,
+        collageImages: action.payload,
+        result: null,
+        collageResult: null
+      }
+
+    case 'ADD_COLLAGE_IMAGES':
+      return {
+        ...state,
+        collageImages: [...state.collageImages, ...action.payload],
+        result: null,
+        collageResult: null
+      }
+
+    case 'REMOVE_COLLAGE_IMAGE':
+      return {
+        ...state,
+        collageImages: state.collageImages.filter(img => img.id !== action.payload),
+        result: null,
+        collageResult: null
+      }
+
+    case 'CLEAR_COLLAGE_IMAGES':
+      return {
+        ...state,
+        collageImages: [],
+        result: null,
+        collageResult: null
+      }
+
+    case 'SET_COLLAGE_SETTINGS':
+      return {
+        ...state,
+        collageSettings: { ...state.collageSettings, ...action.payload },
+        result: null,
+        collageResult: null
+      }
+
+    case 'SET_COLLAGE_RESULT':
+      return {
+        ...state,
+        collageResult: action.payload
+      }
+
     case 'RESET':
       return initialState
 
@@ -263,13 +316,47 @@ export function usePrintTool() {
     logger.info('[usePrintTool] State reset')
   }, [])
 
+  // Collage action creators
+  const setCollageImages = useCallback((images: CollagePoolImage[]) => {
+    dispatch({ type: 'SET_COLLAGE_IMAGES', payload: images })
+  }, [])
+
+  const addCollageImages = useCallback((images: CollagePoolImage[]) => {
+    dispatch({ type: 'ADD_COLLAGE_IMAGES', payload: images })
+    logger.info('[usePrintTool] Added collage images', { count: images.length })
+  }, [])
+
+  const removeCollageImage = useCallback((id: string) => {
+    dispatch({ type: 'REMOVE_COLLAGE_IMAGE', payload: id })
+  }, [])
+
+  const clearCollageImages = useCallback(() => {
+    dispatch({ type: 'CLEAR_COLLAGE_IMAGES' })
+    logger.info('[usePrintTool] Cleared collage images')
+  }, [])
+
+  const setCollageSettings = useCallback((settings: Partial<CollageSettings>) => {
+    dispatch({ type: 'SET_COLLAGE_SETTINGS', payload: settings })
+  }, [])
+
+  const setCollageResult = useCallback((result: CollageLayoutResult | null) => {
+    dispatch({ type: 'SET_COLLAGE_RESULT', payload: result })
+  }, [])
+
   // Validation helpers
   const canProcess = useMemo(() => {
+    // Collage mode needs at least one image in the pool
+    if (state.mode === 'collage') {
+      return state.collageImages.length > 0
+    }
     if (!state.sourceImage) return false
+    // Calibration mode doesn't need layout - it uses its own grid
+    if (state.mode === 'calibration') return true
+    // Tiling modes need layout
     if (!state.layoutInfo) return false
     if (state.mode === 'duplex' && !state.backImage) return false
     return true
-  }, [state.sourceImage, state.backImage, state.layoutInfo, state.mode])
+  }, [state.sourceImage, state.backImage, state.layoutInfo, state.mode, state.collageImages.length])
 
   return {
     state,
@@ -289,6 +376,13 @@ export function usePrintTool() {
     setResult,
     setError,
     reset,
+    // Collage actions
+    setCollageImages,
+    addCollageImages,
+    removeCollageImage,
+    clearCollageImages,
+    setCollageSettings,
+    setCollageResult,
     // Helpers
     canProcess
   }

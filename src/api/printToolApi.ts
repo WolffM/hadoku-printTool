@@ -12,8 +12,8 @@ import type {
   Variation
 } from '../domain/types'
 
-// API base URL - will be configured based on environment
-const API_BASE_URL = '/api/printtool'
+// API base URL - matches edge-router pattern /<service>/api
+const API_BASE_URL = '/printtool/api'
 
 /**
  * Convert a canvas to base64 PNG data
@@ -71,21 +71,30 @@ export function downloadCanvasAsPng(canvas: HTMLCanvasElement, filename: string)
   }, 'image/png')
 }
 
+export interface CalibrationProgress {
+  step: number
+  total: number
+  message: string
+}
+
 /**
  * Generate a calibration sheet using the backend ImageMagick service.
+ * Uses Server-Sent Events for progress updates.
  *
  * @param imageBase64 - Source image as base64
  * @param paperSize - Paper size key (e.g., "Letter", "11x17")
  * @param grid - Grid dimensions [cols, rows]
  * @param dpi - Output DPI
  * @param variations - Array of variations with labels and ImageMagick args
+ * @param onProgress - Callback for progress updates
  */
 export async function generateCalibrationSheet(
   imageBase64: string,
   paperSize: string,
   grid: [number, number],
   dpi: number,
-  variations: Variation[]
+  variations: Variation[],
+  onProgress?: (progress: CalibrationProgress) => void
 ): Promise<CalibrationResponse> {
   logger.info('[printToolApi] Generating calibration sheet', {
     paperSize,
@@ -115,14 +124,68 @@ export async function generateCalibrationSheet(
       throw new Error(`HTTP error ${response.status}: ${response.statusText}`)
     }
 
-    const data = (await response.json()) as CalibrationResponse
+    // Handle SSE response
+    const reader = response.body?.getReader()
+    if (!reader) {
+      throw new Error('No response body')
+    }
 
-    if (!data.success) {
-      throw new Error(data.error || 'Unknown error generating calibration sheet')
+    const decoder = new TextDecoder()
+    let buffer = ''
+    let result: CalibrationResponse | null = null
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      buffer += decoder.decode(value, { stream: true })
+
+      // Parse SSE events from buffer
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || '' // Keep incomplete line in buffer
+
+      for (const line of lines) {
+        if (line.startsWith('event: ')) {
+          // Next data line will be for this event type
+          continue
+        }
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6)
+          try {
+            const parsed = JSON.parse(data) as
+              | CalibrationProgress
+              | CalibrationResponse
+              | { success: false; error: string }
+
+            // Check if this is a progress update
+            if ('step' in parsed && 'total' in parsed) {
+              onProgress?.(parsed)
+            }
+            // Check if this is an error
+            else if ('success' in parsed && !parsed.success) {
+              throw new Error(parsed.error || 'Unknown error')
+            }
+            // Check if this is the final result
+            else if ('success' in parsed && parsed.success) {
+              result = parsed
+            }
+          } catch (e) {
+            if (e instanceof SyntaxError) {
+              // JSON parse error, skip
+              continue
+            }
+            throw e
+          }
+        }
+      }
+    }
+
+    if (!result) {
+      throw new Error('No result received from server')
     }
 
     logger.info('[printToolApi] Calibration sheet generated successfully')
-    return data
+    return result
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     logger.error('[printToolApi] Failed to generate calibration sheet', { error: message })
@@ -191,4 +254,44 @@ export async function checkApiHealth(): Promise<boolean> {
   } catch {
     return false
   }
+}
+
+/**
+ * Convert a TIFF data URL to a canvas for preview.
+ * Since browsers can't display TIFF natively, we attempt to load it
+ * as an image (works in some browsers), or fall back to a placeholder.
+ */
+export async function tiffToCanvas(tiffDataUrl: string): Promise<HTMLCanvasElement> {
+  return new Promise(resolve => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+      const ctx = canvas.getContext('2d')
+      if (ctx) {
+        ctx.drawImage(img, 0, 0)
+      }
+      resolve(canvas)
+    }
+    img.onerror = () => {
+      // TIFF not supported by browser, create placeholder
+      const canvas = document.createElement('canvas')
+      canvas.width = 800
+      canvas.height = 600
+      const ctx = canvas.getContext('2d')
+      if (ctx) {
+        ctx.fillStyle = '#f0f0f0'
+        ctx.fillRect(0, 0, 800, 600)
+        ctx.fillStyle = '#333'
+        ctx.font = '24px sans-serif'
+        ctx.textAlign = 'center'
+        ctx.fillText('TIFF Preview Not Available', 400, 280)
+        ctx.font = '16px sans-serif'
+        ctx.fillText('Click Download to save the calibration sheet', 400, 320)
+      }
+      resolve(canvas)
+    }
+    img.src = tiffDataUrl
+  })
 }

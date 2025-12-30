@@ -14,7 +14,8 @@ interface ModeSelectorProps {
 const MODES: { id: PrintMode; label: string }[] = [
   { id: 'simple', label: 'Simple Tiling' },
   { id: 'duplex', label: 'Postcard Duplex' },
-  { id: 'calibration', label: 'Calibration Sheet' }
+  { id: 'calibration', label: 'Calibration Sheet' },
+  { id: 'collage', label: 'Collage' }
 ]
 
 export function ModeSelector({ mode, onModeChange }: ModeSelectorProps) {

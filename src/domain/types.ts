@@ -49,7 +49,7 @@ export type PositionOption = (typeof POSITION_OPTIONS)[number]
 export type CalibrationGridKey = keyof typeof CALIBRATION_GRIDS
 export type VariationPresetKey = keyof typeof VARIATION_PRESETS
 
-export type PrintMode = 'simple' | 'duplex' | 'calibration'
+export type PrintMode = 'simple' | 'duplex' | 'calibration' | 'collage'
 
 // ============================================================================
 // Variation Types
@@ -67,7 +67,8 @@ export interface Variation {
 export interface ProcessedResult {
   frontCanvas: HTMLCanvasElement
   backCanvas?: HTMLCanvasElement // For duplex mode
-  layoutInfo: LayoutInfo
+  tiffDataUrl?: string // For calibration mode - pre-generated TIFF
+  layoutInfo: LayoutInfo | null
   filename: string
 }
 
@@ -94,6 +95,11 @@ export interface PrintToolState {
   calibrationDpi: number
   calibrationPreset: VariationPresetKey
   selectedVariationIndex: number
+
+  // Collage Settings
+  collageImages: CollagePoolImage[]
+  collageSettings: CollageSettings
+  collageResult: CollageLayoutResult | null
 
   // Processing State
   isProcessing: boolean
@@ -124,6 +130,12 @@ export type PrintToolAction =
   | { type: 'SET_RESULT'; payload: ProcessedResult | null }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_LAYOUT_INFO'; payload: LayoutInfo | null }
+  | { type: 'SET_COLLAGE_IMAGES'; payload: CollagePoolImage[] }
+  | { type: 'ADD_COLLAGE_IMAGES'; payload: CollagePoolImage[] }
+  | { type: 'REMOVE_COLLAGE_IMAGE'; payload: string }
+  | { type: 'CLEAR_COLLAGE_IMAGES' }
+  | { type: 'SET_COLLAGE_SETTINGS'; payload: Partial<CollageSettings> }
+  | { type: 'SET_COLLAGE_RESULT'; payload: CollageLayoutResult | null }
   | { type: 'RESET' }
 
 // ============================================================================
@@ -140,7 +152,12 @@ export interface CalibrationRequest {
 
 export interface CalibrationResponse {
   success: boolean
-  image?: string // base64 TIFF
+  data?: {
+    image: string // base64 TIFF data URL
+    filename: string
+    gridSize: [number, number]
+    variationCount: number
+  }
   error?: string
 }
 
@@ -155,4 +172,61 @@ export interface ExportResponse {
   file?: string // base64
   filename?: string
   error?: string
+}
+
+// ============================================================================
+// Collage Types
+// ============================================================================
+
+export type CollageAlgorithm = 'ffd-row' | 'masonry' | 'guillotine' | 'spiral' | 'treemap'
+export type CropAnchor =
+  | 'center'
+  | 'top'
+  | 'bottom'
+  | 'left'
+  | 'right'
+  | 'top-left'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-right'
+
+export interface CollagePoolImage extends ImageFile {
+  id: string
+  selected: boolean // Whether used in current layout
+}
+
+export interface CollageRect {
+  x: number
+  y: number
+  width: number
+  height: number // All in inches
+}
+
+export interface PlacedImage {
+  imageId: string
+  rect: CollageRect
+  scaleFactor: number
+  cropBox?: { sx: number; sy: number; sw: number; sh: number }
+  rotated: boolean
+}
+
+export interface CollageLayoutResult {
+  placements: PlacedImage[]
+  coverage: number // 0-1
+  unusedImageIds: string[]
+  scaleFactor: number
+  seed: number
+}
+
+export interface CollageSettings {
+  algorithm: CollageAlgorithm
+  paperSize: PaperSizeKey
+  dpi: number
+  gapInches: number
+  maxDownscalePercent: number // 0-80
+  allowCropping: boolean
+  maxCropPercent: number // 0-30
+  cropAnchor: CropAnchor
+  minImageSizeInches: number
+  normalizeImageSizes: boolean // Scale larger images down more to normalize sizes
 }

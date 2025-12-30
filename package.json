@@ -1,6 +1,6 @@
 {
   "name": "@wolffm/hadoku-printtool",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Image manipulation tool for cropping, resizing, and collating images for print",
   "type": "module",
   "repository": {
@@ -21,7 +21,7 @@
     "./style.css": "./dist/style.css"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "pm2 start ecosystem.config.cjs --silent && vite",
     "build": "vite build && tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

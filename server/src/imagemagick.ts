@@ -14,6 +14,12 @@ import { randomBytes } from 'node:crypto'
 
 const execFileAsync = promisify(execFile)
 
+// Options to hide CMD window on Windows
+const execOptions = {
+  windowsHide: true,
+  maxBuffer: 50 * 1024 * 1024 // 50MB buffer for large images
+}
+
 // Paper sizes in pixels at 600 DPI
 const PAPER_SIZES: Record<string, { width: number; height: number }> = {
   Letter: { width: 5100, height: 6600 }, // 8.5" x 11" at 600 DPI
@@ -76,12 +82,12 @@ async function cleanupTempDir(dir: string, files: string[]): Promise<void> {
  */
 export async function checkImageMagick(): Promise<boolean> {
   try {
-    await execFileAsync('magick', ['--version'])
+    await execFileAsync('magick', ['--version'], execOptions)
     return true
   } catch {
     try {
       // Try legacy 'convert' command
-      await execFileAsync('convert', ['--version'])
+      await execFileAsync('convert', ['--version'], execOptions)
       return true
     } catch {
       return false
@@ -94,22 +100,37 @@ export async function checkImageMagick(): Promise<boolean> {
  */
 async function getConvertCommand(): Promise<string> {
   try {
-    await execFileAsync('magick', ['--version'])
+    await execFileAsync('magick', ['--version'], execOptions)
     return 'magick'
   } catch {
     return 'convert'
   }
 }
 
+type ProgressCallback = (step: number, total: number, message: string) => Promise<void>
+
 /**
- * Generate a calibration sheet with multiple image variations
+ * Generate a calibration sheet with multiple image variations (with progress updates)
  */
-export async function generateCalibrationSheet(
-  options: CalibrationOptions
+export async function generateCalibrationSheetWithProgress(
+  options: CalibrationOptions,
+  onProgress?: ProgressCallback
 ): Promise<{ data: Buffer; filename: string }> {
   const { imageData, paperSize, grid, dpi, variations } = options
   const [cols, rows] = grid
   const paper = PAPER_SIZES[paperSize] || PAPER_SIZES.Letter
+
+  // Calculate total steps: variations + labeled versions + montage
+  const numVariations = Math.min(variations.length, cols * rows)
+  const totalSteps = numVariations * 2 + 1 // variations + labels + montage
+  let currentStep = 0
+
+  const progress = async (message: string) => {
+    currentStep++
+    if (onProgress) {
+      await onProgress(currentStep, totalSteps, message)
+    }
+  }
 
   // Scale paper size to requested DPI
   const scale = dpi / 600
@@ -135,7 +156,7 @@ export async function generateCalibrationSheet(
 
     // Generate each variation
     const variationFiles: string[] = []
-    for (let i = 0; i < variations.length && i < cols * rows; i++) {
+    for (let i = 0; i < numVariations; i++) {
       const variation = variations[i]
       const outputFile = `var-${i}.png`
 
@@ -153,13 +174,14 @@ export async function generateCalibrationSheet(
       ]
 
       if (convertCmd === 'magick') {
-        await execFileAsync('magick', args)
+        await execFileAsync('magick', args, execOptions)
       } else {
-        await execFileAsync('convert', args)
+        await execFileAsync('convert', args, execOptions)
       }
 
       tempFiles.push(outputFile)
       variationFiles.push(outputFile)
+      await progress(`Processing variation ${i + 1}: ${variation.label}`)
     }
 
     // Create labeled versions with text overlay
@@ -193,18 +215,20 @@ export async function generateCalibrationSheet(
       ]
 
       if (convertCmd === 'magick') {
-        await execFileAsync('magick', args)
+        await execFileAsync('magick', args, execOptions)
       } else {
-        await execFileAsync('convert', args)
+        await execFileAsync('convert', args, execOptions)
       }
 
       tempFiles.push(labeledFile)
       labeledFiles.push(labeledFile)
+      await progress(`Adding label ${i + 1}: ${variation.label}`)
     }
 
     // Use montage to create the grid
     const outputFile = 'calibration-sheet.tif'
     const montageArgs = [
+      'montage',
       ...labeledFiles.map(f => join(tempDir, f)),
       '-tile',
       `${cols}x${rows}`,
@@ -217,8 +241,15 @@ export async function generateCalibrationSheet(
       join(tempDir, outputFile)
     ]
 
-    await execFileAsync('montage', montageArgs)
+    // On Windows, montage needs to be called via 'magick montage'
+    if (convertCmd === 'magick') {
+      await execFileAsync('magick', montageArgs, execOptions)
+    } else {
+      // Remove 'montage' from args for legacy command
+      await execFileAsync('montage', montageArgs.slice(1), execOptions)
+    }
     tempFiles.push(outputFile)
+    await progress('Creating final calibration sheet')
 
     // Read and return the result
     const result = await readFile(join(tempDir, outputFile))
@@ -283,9 +314,9 @@ export async function exportImage(
     cmdArgs.push(join(tempDir, outputFile))
 
     if (convertCmd === 'magick') {
-      await execFileAsync('magick', cmdArgs)
+      await execFileAsync('magick', cmdArgs, execOptions)
     } else {
-      await execFileAsync('convert', cmdArgs)
+      await execFileAsync('convert', cmdArgs, execOptions)
     }
 
     tempFiles.push(outputFile)

@@ -1,10 +1,22 @@
 # @wolffm/hadoku-printtool
 
-Image manipulation tool for cropping, resizing, and collating images for print-ready output.
+Image manipulation tool for tiling, collaging, and preparing images for print-ready output.
 
 ## Overview
 
-Print Tool is a React-based child app that provides image manipulation capabilities for preparing print-ready outputs. Features include simple tiling, postcard duplex printing, and calibration sheet generation. Integrates with the hadoku parent site for theming and deployment.
+Print Tool is a React-based child app that provides image manipulation capabilities for preparing print-ready outputs. Integrates with the hadoku parent site for theming and deployment.
+
+## Modes
+
+- **Simple Tiling** - Tile a single image across a page (e.g., wallet photos, stickers)
+- **Duplex Printing** - Create front/back sheets for double-sided postcards
+- **Calibration** - Generate color/density calibration sheets via backend ImageMagick processing
+- **Collage** - Arrange multiple images on a page using various layout algorithms:
+  - FFD-Row: Row-based bin packing, good for similar-sized images
+  - Masonry: Pinterest-style columns, good for portrait-heavy sets
+  - Guillotine: Space-efficient bin packing with guillotine cuts
+  - Spiral: Fill from edges inward in a spiral pattern
+  - Treemap: Recursive space partitioning for balanced layouts
 
 ## Development
 

@@ -21,6 +21,7 @@ export const TILE_SIZES = {
 
 export const PAPER_SIZES = {
   '11x17': [11, 17] as const,
+  '11x9': [11, 9] as const,
   Letter: [8.5, 11] as const,
   A4: [8.27, 11.69] as const,
   A3: [11.69, 16.54] as const,
@@ -308,3 +309,49 @@ export const ACCEPTED_IMAGE_TYPES = [
 
 /** Accepted file extensions for file input */
 export const ACCEPTED_EXTENSIONS = '.png,.jpg,.jpeg,.tif,.tiff,.webp,.bmp'
+
+// ============================================================================
+// Collage Constants
+// ============================================================================
+
+export const COLLAGE_ALGORITHMS = {
+  'ffd-row': 'Row Packing',
+  masonry: 'Masonry',
+  guillotine: 'Guillotine',
+  spiral: 'Spiral',
+  treemap: 'Treemap'
+} as const
+
+export const COLLAGE_ALGORITHM_DESCRIPTIONS = {
+  'ffd-row': 'Pack images in rows from top-left to bottom-right. Good for similar-sized images.',
+  masonry:
+    'Pinterest-style columns. Each image goes in the shortest column. Good for varied heights.',
+  guillotine: 'Bin packing with guillotine cuts. Best space efficiency for mixed sizes.',
+  spiral: 'Place images spiraling inward from edges. Larger images on edges, smaller in center.',
+  treemap: 'Recursive space partitioning. Maintains aspect ratios well.'
+} as const
+
+export const CROP_ANCHOR_LABELS = {
+  center: 'Center',
+  top: 'Top',
+  bottom: 'Bottom',
+  left: 'Left',
+  right: 'Right',
+  'top-left': 'Top Left',
+  'top-right': 'Top Right',
+  'bottom-left': 'Bottom Left',
+  'bottom-right': 'Bottom Right'
+} as const
+
+export const DEFAULT_COLLAGE_SETTINGS = {
+  algorithm: 'guillotine' as const,
+  paperSize: '11x17' as const,
+  dpi: 300,
+  gapInches: 0.0625,
+  maxDownscalePercent: 50, // Was 80 - prevents images from getting too small
+  allowCropping: false,
+  maxCropPercent: 15,
+  cropAnchor: 'center' as const,
+  minImageSizeInches: 1.0, // Was 0.75 - ensures images remain visible
+  normalizeImageSizes: true
+}

@@ -16,13 +16,18 @@
  *   cd server && npm install
  */
 
+const path = require('path');
+
+const serverDir = path.join(__dirname, 'server');
+
 module.exports = {
 	apps: [
 		{
 			name: 'printtool-server',
-			cwd: './server',
+			cwd: serverDir,
 			script: 'src/index.ts',
-			interpreter: './node_modules/.bin/tsx',
+			interpreter: 'node',
+			interpreter_args: '--import tsx',
 			watch: ['src'],
 			ignore_watch: ['node_modules'],
 			autorestart: true,

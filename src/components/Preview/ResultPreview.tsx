@@ -86,15 +86,21 @@ export function ResultPreview({ result, mode }: ResultPreviewProps) {
         <canvas ref={canvasRef} className="printtool-result-preview__canvas" />
       </div>
 
-      <div className="printtool-result-preview__info">
-        <span>
-          {result.layoutInfo.paperW}" × {result.layoutInfo.paperH}"
-        </span>
-        <span>
-          {result.layoutInfo.count} tiles ({result.layoutInfo.cols}×{result.layoutInfo.rows})
-        </span>
-        {isDuplex && <span>{showBack ? 'Back Sheet' : 'Front Sheet'}</span>}
-      </div>
+      {(result.layoutInfo || isDuplex) && (
+        <div className="printtool-result-preview__info">
+          {result.layoutInfo && (
+            <>
+              <span>
+                {result.layoutInfo.paperW}" × {result.layoutInfo.paperH}"
+              </span>
+              <span>
+                {result.layoutInfo.count} tiles ({result.layoutInfo.cols}×{result.layoutInfo.rows})
+              </span>
+            </>
+          )}
+          {isDuplex && <span>{showBack ? 'Back Sheet' : 'Front Sheet'}</span>}
+        </div>
+      )}
     </div>
   )
 }

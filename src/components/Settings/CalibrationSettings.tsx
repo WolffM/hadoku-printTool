@@ -103,12 +103,7 @@ export function CalibrationSettings({
           <div className="printtool-calibration-settings__variations-label">
             Variations ({activeVariations.length} of {totalCells})
           </div>
-          <div
-            className="printtool-calibration-settings__variations-grid"
-            style={{
-              gridTemplateColumns: `repeat(${gridSize[1]}, 1fr)`
-            }}
-          >
+          <div className="printtool-calibration-settings__variations-grid">
             {activeVariations.map((variation, index) => (
               <button
                 key={index}

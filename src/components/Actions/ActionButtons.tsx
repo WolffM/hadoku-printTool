@@ -10,7 +10,8 @@ import {
   downloadCanvasAsPng,
   exportToTiff,
   canvasToBase64,
-  downloadBase64File
+  downloadBase64File,
+  dataUrlToBase64
 } from '../../api/printToolApi'
 
 interface ActionButtonsProps {
@@ -33,13 +34,20 @@ export function ActionButtons({
   onError
 }: ActionButtonsProps) {
   const [isExporting, setIsExporting] = useState(false)
+  const [localProcessing, setLocalProcessing] = useState(false)
+
+  // Use local state OR parent state for processing indicator
+  const showProcessing = localProcessing || isProcessing
 
   const handleProcess = async () => {
+    setLocalProcessing(true)
     try {
       await onProcess()
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Processing failed'
       onError(message)
+    } finally {
+      setLocalProcessing(false)
     }
   }
 
@@ -54,6 +62,17 @@ export function ActionButtons({
   const handleDownloadTiff = async (canvas: HTMLCanvasElement, suffix = '') => {
     setIsExporting(true)
     try {
+      // For calibration mode, we already have a pre-generated TIFF
+      if (result?.tiffDataUrl) {
+        const filename = result.filename
+          ? `${result.filename}.tif`
+          : `calibration-sheet${suffix}.tif`
+        downloadBase64File(dataUrlToBase64(result.tiffDataUrl), filename, 'image/tiff')
+        logger.info('[ActionButtons] Pre-generated TIFF downloaded', { filename })
+        return
+      }
+
+      // For other modes, export canvas to TIFF via API
       const base64 = canvasToBase64(canvas)
       const response = await exportToTiff(base64, dpi)
 
@@ -94,9 +113,9 @@ export function ActionButtons({
           type="button"
           className="printtool-actions__button printtool-actions__button--primary"
           onClick={onProcessClick}
-          disabled={!canProcess || isProcessing}
+          disabled={!canProcess || showProcessing}
         >
-          {isProcessing ? (
+          {showProcessing ? (
             <>
               <span className="printtool-actions__spinner" />
               Processing...

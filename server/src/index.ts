@@ -16,7 +16,12 @@
 import { Hono } from 'hono'
 import { serve } from '@hono/node-server'
 import { cors } from 'hono/cors'
-import { checkImageMagick, generateCalibrationSheet, exportImage } from './imagemagick.js'
+import { streamSSE } from 'hono/streaming'
+import {
+  checkImageMagick,
+  generateCalibrationSheetWithProgress,
+  exportImage
+} from './imagemagick.js'
 
 const app = new Hono().basePath('/printtool/api')
 
@@ -38,58 +43,72 @@ app.get('/health', async c => {
   })
 })
 
-// Calibration endpoint
+// Calibration endpoint with SSE progress streaming
 app.post('/calibration', async c => {
-  try {
-    const body = await c.req.json()
+  const body = await c.req.json()
 
-    // Validate request
-    if (!body.image) {
-      return c.json({ success: false, error: 'Missing image data' }, 400)
-    }
-
-    if (!body.variations || !Array.isArray(body.variations) || body.variations.length === 0) {
-      return c.json({ success: false, error: 'Missing or empty variations array' }, 400)
-    }
-
-    // Parse base64 image
-    let imageData: Buffer
-    try {
-      // Remove data URL prefix if present
-      const base64Data = body.image.replace(/^data:image\/\w+;base64,/, '')
-      imageData = Buffer.from(base64Data, 'base64')
-    } catch {
-      return c.json({ success: false, error: 'Invalid base64 image data' }, 400)
-    }
-
-    // Generate calibration sheet
-    const result = await generateCalibrationSheet({
-      imageData,
-      paperSize: body.paperSize || 'Letter',
-      grid: body.grid || [2, 4],
-      dpi: body.dpi || 600,
-      variations: body.variations
-    })
-
-    return c.json({
-      success: true,
-      data: {
-        image: `data:image/tiff;base64,${result.data.toString('base64')}`,
-        filename: result.filename,
-        gridSize: body.grid || [2, 4],
-        variationCount: body.variations.length
-      }
-    })
-  } catch (err) {
-    console.error('Calibration error:', err)
-    return c.json(
-      {
-        success: false,
-        error: err instanceof Error ? err.message : 'Unknown error'
-      },
-      500
-    )
+  // Validate request
+  if (!body.image) {
+    return c.json({ success: false, error: 'Missing image data' }, 400)
   }
+
+  if (!body.variations || !Array.isArray(body.variations) || body.variations.length === 0) {
+    return c.json({ success: false, error: 'Missing or empty variations array' }, 400)
+  }
+
+  // Parse base64 image
+  let imageData: Buffer
+  try {
+    // Remove data URL prefix if present
+    const base64Data = body.image.replace(/^data:image\/\w+;base64,/, '')
+    imageData = Buffer.from(base64Data, 'base64')
+  } catch {
+    return c.json({ success: false, error: 'Invalid base64 image data' }, 400)
+  }
+
+  // Use SSE for progress updates
+  return streamSSE(c, async stream => {
+    try {
+      const result = await generateCalibrationSheetWithProgress(
+        {
+          imageData,
+          paperSize: body.paperSize || 'Letter',
+          grid: body.grid || [2, 4],
+          dpi: body.dpi || 600,
+          variations: body.variations
+        },
+        async (step, total, message) => {
+          await stream.writeSSE({
+            event: 'progress',
+            data: JSON.stringify({ step, total, message })
+          })
+        }
+      )
+
+      // Send final result
+      await stream.writeSSE({
+        event: 'complete',
+        data: JSON.stringify({
+          success: true,
+          data: {
+            image: `data:image/tiff;base64,${result.data.toString('base64')}`,
+            filename: result.filename,
+            gridSize: body.grid || [2, 4],
+            variationCount: body.variations.length
+          }
+        })
+      })
+    } catch (err) {
+      console.error('Calibration error:', err)
+      await stream.writeSSE({
+        event: 'error',
+        data: JSON.stringify({
+          success: false,
+          error: err instanceof Error ? err.message : 'Unknown error'
+        })
+      })
+    }
+  })
 })
 
 // Export endpoint
