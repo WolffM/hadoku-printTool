@@ -17,7 +17,9 @@
       "Bash(pnpm exec husky:*)",
       "Bash(npx husky install)",
       "Bash(npx husky)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(pnpm add:*)",
+      "Bash(cat:*)"
     ]
   }
 }

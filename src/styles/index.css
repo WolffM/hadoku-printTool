@@ -77,3 +77,735 @@
   font-size: var(--font-size-base, 1rem);
   line-height: var(--line-height-relaxed, 1.625);
 }
+
+/* ============================================================================
+   Layout
+   ============================================================================ */
+
+.printtool__layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .printtool__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.printtool__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.printtool__main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.printtool__error {
+  padding: 0.75rem 1rem;
+  background-color: var(--color-danger-light, #fef2f2);
+  border: 1px solid var(--color-danger, #ef4444);
+  border-radius: var(--border-radius, 8px);
+  color: var(--color-danger, #ef4444);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+/* ============================================================================
+   Mode Selector
+   ============================================================================ */
+
+.printtool-mode-selector {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background-color: var(--color-bg-alt, #f3f4f6);
+  border-radius: var(--border-radius, 8px);
+}
+
+.printtool-mode-selector__button {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  background-color: transparent;
+  color: var(--color-text-secondary, #64748b);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.printtool-mode-selector__button:hover {
+  background-color: var(--color-bg-hover, #e5e7eb);
+  color: var(--color-text, #000000);
+}
+
+.printtool-mode-selector__button--active {
+  background-color: var(--color-bg-card, #ffffff);
+  color: var(--color-primary, #0066cc);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+/* ============================================================================
+   Image Upload
+   ============================================================================ */
+
+.printtool-image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.printtool-image-upload--compact {
+  gap: 0.25rem;
+}
+
+.printtool-image-upload__label {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text, #000000);
+}
+
+.printtool-image-upload__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  border: 2px dashed var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius, 8px);
+  background-color: var(--color-bg-card, #ffffff);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.printtool-image-upload__dropzone:hover,
+.printtool-image-upload__dropzone--active {
+  border-color: var(--color-primary, #0066cc);
+  background-color: var(--color-primary-bg, #eff6ff);
+}
+
+.printtool-image-upload__dropzone--error {
+  border-color: var(--color-danger, #ef4444);
+}
+
+.printtool-image-upload__dropzone--compact {
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.printtool-image-upload__icon {
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.printtool-image-upload__text {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #64748b);
+  text-align: center;
+}
+
+.printtool-image-upload__hint {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.printtool-image-upload__loading {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-image-upload__error {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-danger, #ef4444);
+}
+
+.printtool-image-upload__input {
+  display: none;
+}
+
+/* ============================================================================
+   Image Preview
+   ============================================================================ */
+
+.printtool-image-preview {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: var(--color-bg-alt, #f9fafb);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius, 8px);
+}
+
+.printtool-image-preview--compact {
+  padding: 0.5rem;
+}
+
+.printtool-image-preview__label {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-image-preview__container {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: calc(var(--border-radius, 8px) - 4px);
+}
+
+.printtool-image-preview__image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.printtool-image-preview__info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.printtool-image-preview__info--compact {
+  justify-content: center;
+}
+
+.printtool-image-preview__name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.printtool-image-preview__clear {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--color-bg-card, #ffffff);
+  color: var(--color-text-secondary, #64748b);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+  transition: all 0.2s ease;
+}
+
+.printtool-image-preview__clear:hover {
+  background-color: var(--color-danger, #ef4444);
+  color: white;
+}
+
+/* ============================================================================
+   Settings
+   ============================================================================ */
+
+.printtool-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius, 8px);
+}
+
+.printtool-settings__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.printtool-settings__label {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text, #000000);
+}
+
+.printtool-settings__select,
+.printtool-settings__input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  background-color: var(--color-bg, #ffffff);
+  color: var(--color-text, #000000);
+  font-size: var(--font-size-sm, 0.875rem);
+  transition: border-color 0.2s ease;
+}
+
+.printtool-settings__select:focus,
+.printtool-settings__input:focus {
+  outline: none;
+  border-color: var(--color-primary, #0066cc);
+}
+
+.printtool-settings__select:disabled,
+.printtool-settings__input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.printtool-settings__hint {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #9ca3af);
+  font-style: italic;
+}
+
+.printtool-settings__layout-info {
+  padding: 0.75rem;
+  background-color: var(--color-primary-bg, #eff6ff);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+}
+
+.printtool-settings__layout-label {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-primary, #0066cc);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.printtool-settings__layout-value {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text, #000000);
+  margin-top: 0.25rem;
+}
+
+.printtool-settings__layout-error {
+  padding: 0.75rem;
+  background-color: var(--color-danger-light, #fef2f2);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-danger, #ef4444);
+}
+
+/* ============================================================================
+   Duplex Settings
+   ============================================================================ */
+
+.printtool-duplex-settings {
+  padding: 1rem;
+  background-color: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius, 8px);
+}
+
+.printtool-duplex-settings__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.printtool-duplex-settings__title {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text, #000000);
+}
+
+.printtool-duplex-settings__description {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-duplex-settings__warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-warning-bg, #fffbeb);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-warning, #f59e0b);
+}
+
+.printtool-duplex-settings__warning-icon {
+  font-size: 1.25rem;
+}
+
+.printtool-duplex-settings__info {
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-bg-alt, #f9fafb);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-duplex-settings__info p {
+  margin: 0;
+}
+
+/* ============================================================================
+   Calibration Settings
+   ============================================================================ */
+
+.printtool-calibration-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius, 8px);
+}
+
+.printtool-calibration-settings__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.printtool-calibration-settings__title {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text, #000000);
+}
+
+.printtool-calibration-settings__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.printtool-calibration-settings__label {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text, #000000);
+}
+
+.printtool-calibration-settings__select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  background-color: var(--color-bg, #ffffff);
+  color: var(--color-text, #000000);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.printtool-calibration-settings__variations {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.printtool-calibration-settings__variations-label {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-calibration-settings__variations-grid {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.printtool-calibration-settings__variation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border: 2px solid var(--color-border, #e5e7eb);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  background-color: var(--color-bg, #ffffff);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.printtool-calibration-settings__variation:hover {
+  border-color: var(--color-primary, #0066cc);
+}
+
+.printtool-calibration-settings__variation--selected {
+  border-color: var(--color-primary, #0066cc);
+  background-color: var(--color-primary-bg, #eff6ff);
+}
+
+.printtool-calibration-settings__variation-preview {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.printtool-calibration-settings__variation-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.printtool-calibration-settings__variation-placeholder {
+  aspect-ratio: 1;
+  background-color: var(--color-bg-alt, #f3f4f6);
+  border-radius: 2px;
+}
+
+.printtool-calibration-settings__variation-label {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #64748b);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.printtool-calibration-settings__selected-info {
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-bg-alt, #f9fafb);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text, #000000);
+}
+
+.printtool-calibration-settings__args {
+  margin-top: 0.25rem;
+  font-family: monospace;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #9ca3af);
+  word-break: break-all;
+}
+
+.printtool-calibration-settings__info {
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-bg-alt, #f9fafb);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-calibration-settings__info p {
+  margin: 0;
+}
+
+/* ============================================================================
+   Result Preview
+   ============================================================================ */
+
+.printtool-result-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius, 8px);
+  min-height: 300px;
+}
+
+.printtool-result-preview--empty {
+  justify-content: center;
+  align-items: center;
+}
+
+.printtool-result-preview__placeholder {
+  text-align: center;
+  color: var(--color-text-secondary, #64748b);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.printtool-result-preview__toggle {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background-color: var(--color-bg-alt, #f3f4f6);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  align-self: center;
+}
+
+.printtool-result-preview__toggle-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: calc(var(--border-radius, 8px) - 4px);
+  background-color: transparent;
+  color: var(--color-text-secondary, #64748b);
+  font-size: var(--font-size-sm, 0.875rem);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.printtool-result-preview__toggle-btn:hover {
+  background-color: var(--color-bg-hover, #e5e7eb);
+}
+
+.printtool-result-preview__toggle-btn--active {
+  background-color: var(--color-bg-card, #ffffff);
+  color: var(--color-primary, #0066cc);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.printtool-result-preview__canvas-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  overflow: hidden;
+}
+
+.printtool-result-preview__canvas {
+  max-width: 100%;
+  max-height: 100%;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: calc(var(--border-radius, 8px) - 4px);
+}
+
+.printtool-result-preview__info {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+/* ============================================================================
+   Layout Info
+   ============================================================================ */
+
+.printtool-layout-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: var(--color-primary-bg, #eff6ff);
+  border-radius: var(--border-radius, 8px);
+}
+
+.printtool-layout-info--error {
+  background-color: var(--color-danger-light, #fef2f2);
+  color: var(--color-danger, #ef4444);
+}
+
+.printtool-layout-info__main {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.printtool-layout-info__count {
+  font-size: var(--font-size-xl, 1.5rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-primary, #0066cc);
+}
+
+.printtool-layout-info__label {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-layout-info__details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+/* ============================================================================
+   Action Buttons
+   ============================================================================ */
+
+.printtool-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius, 8px);
+}
+
+.printtool-actions__process {
+  display: flex;
+  justify-content: center;
+}
+
+.printtool-actions__button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--border-radius, 8px);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.printtool-actions__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.printtool-actions__button--primary {
+  background-color: var(--color-primary, #0066cc);
+  color: white;
+  min-width: 150px;
+  justify-content: center;
+}
+
+.printtool-actions__button--primary:hover:not(:disabled) {
+  background-color: var(--color-primary-dark, #0052a3);
+}
+
+.printtool-actions__button--secondary {
+  background-color: var(--color-bg-alt, #f3f4f6);
+  color: var(--color-text, #000000);
+}
+
+.printtool-actions__button--secondary:hover:not(:disabled) {
+  background-color: var(--color-bg-hover, #e5e7eb);
+}
+
+.printtool-actions__downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.printtool-actions__download-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.printtool-actions__download-label {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #64748b);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.printtool-actions__download-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.printtool-actions__spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
