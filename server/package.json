@@ -17,7 +17,7 @@
   "author": "Hadoku",
   "license": "ISC",
   "dependencies": {
-    "hono": "^4.10.3",
+    "hono": "^4.11.4",
     "@hono/node-server": "^1.13.1"
   },
   "devDependencies": {
