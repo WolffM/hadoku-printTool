@@ -81,16 +81,3 @@ Pushes to `main` automatically:
 1. Build and publish to GitHub Packages
 2. Notify parent site to update
 3. Parent pulls new version and redeploys
-
-### Versioning
-
-Version bumps are handled automatically through two mechanisms:
-
-1. **Pre-commit hook** (primary): The `.husky/pre-commit` hook automatically bumps the version for every commit
-2. **Workflow fallback**: The publish workflow checks if the current version already exists in the registry and keeps bumping until finding an unpublished version
-
-This dual approach ensures versions are always incremented, even if commits bypass the pre-commit hook (e.g., web UI edits, `--no-verify` commits). The workflow's loop mechanism handles cases where multiple versions are already published.
-
-Version bumping follows this pattern:
-- Patch version increments on each commit (1.0.5 → 1.0.6)
-- At patch 20, rolls over to next minor (1.0.20 → 1.1.0)

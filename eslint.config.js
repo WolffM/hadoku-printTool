@@ -27,7 +27,7 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: './tsconfig.json'
+        project: ['./tsconfig.json', './worker/tsconfig.json']
       },
       globals: {
         // Sanitize globals to remove keys with trailing whitespace (known globals package issue)
