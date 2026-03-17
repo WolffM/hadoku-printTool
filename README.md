@@ -2,6 +2,15 @@
 
 Image manipulation tool for tiling, collaging, and preparing images for print-ready output.
 
+## API Package
+
+The `@wolffm/hadoku-printtool/api` subpath exports a Cloudflare Worker handler factory:
+
+```ts
+import { createPrinttoolHandler } from '@wolffm/hadoku-printtool/api'
+export default createPrinttoolHandler('/printtool/api')
+```
+
 ## Overview
 
 Print Tool is a React-based child app that provides image manipulation capabilities for preparing print-ready outputs. Integrates with the hadoku parent site for theming and deployment.
