@@ -33,6 +33,9 @@ pnpm-debug.log*
 coverage/
 .nyc_output/
 
+# IDE
+*.code-workspace
+
 # Temporary
 .tmp/
 .cache/
