@@ -3,7 +3,6 @@
  * Settings panel for collage mode
  */
 
-import React from 'react'
 import type {
   CollageSettings as CollageSettingsType,
   CollageAlgorithm,
@@ -16,6 +15,7 @@ import {
   CROP_ANCHOR_LABELS,
   PAPER_SIZES
 } from '../../domain/constants'
+import { SettingsPanel } from '../shared/SettingsPanel'
 
 interface CollageSettingsProps {
   settings: CollageSettingsType
@@ -27,7 +27,7 @@ export function CollageSettings({ settings, onChange }: CollageSettingsProps) {
   const paperSizes = Object.keys(PAPER_SIZES) as PaperSizeKey[]
 
   return (
-    <div className="printtool-collage-settings">
+    <SettingsPanel className="printtool-collage-settings">
       {/* Algorithm Selection */}
       <div className="printtool-settings__group">
         <label className="printtool-settings__label">Algorithm</label>
@@ -210,7 +210,7 @@ export function CollageSettings({ settings, onChange }: CollageSettingsProps) {
           </div>
         </>
       )}
-    </div>
+    </SettingsPanel>
   )
 }
 

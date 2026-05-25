@@ -3,7 +3,7 @@
  * Main state management for the Print Tool application
  */
 
-import { useReducer, useEffect, useCallback, useMemo } from 'react'
+import { useReducer, useEffect, useCallback } from 'react'
 import { logger } from '@wolffm/task-ui-components'
 import type {
   PrintToolState,
@@ -18,7 +18,11 @@ import type {
   ProcessedResult,
   CollagePoolImage,
   CollageSettings,
-  CollageLayoutResult
+  CollageLayoutResult,
+  MtgInputMode,
+  MtgCustomImage,
+  StickerImage,
+  StickerSettings
 } from '../domain/types'
 import {
   DEFAULT_PAPER_SIZE,
@@ -29,6 +33,7 @@ import {
   DEFAULT_CALIBRATION_DPI,
   DEFAULT_CALIBRATION_PRESET,
   DEFAULT_COLLAGE_SETTINGS,
+  DEFAULT_STICKER_SETTINGS,
   PAPER_SIZES,
   TILE_SIZES
 } from '../domain/constants'
@@ -38,7 +43,8 @@ import { calculateLayout } from '../domain/processing'
 // Initial State
 // ============================================================================
 
-const initialState: PrintToolState = {
+/** Exported for unit tests — also the source for `useReducer`'s initial value. */
+export const initialState: PrintToolState = {
   mode: 'simple',
   sourceImage: null,
   backImage: null,
@@ -53,6 +59,11 @@ const initialState: PrintToolState = {
   collageImages: [],
   collageSettings: DEFAULT_COLLAGE_SETTINGS,
   collageResult: null,
+  mtgInputMode: 'list',
+  mtgInput: '',
+  mtgCustomImages: [],
+  stickerImages: [],
+  stickerSettings: DEFAULT_STICKER_SETTINGS,
   isProcessing: false,
   result: null,
   error: null,
@@ -63,7 +74,8 @@ const initialState: PrintToolState = {
 // Reducer
 // ============================================================================
 
-function reducer(state: PrintToolState, action: PrintToolAction): PrintToolState {
+/** Exported for unit tests. Pure function — `useReducer` consumes it inside the hook. */
+export function reducer(state: PrintToolState, action: PrintToolAction): PrintToolState {
   switch (action.type) {
     case 'SET_MODE':
       return {
@@ -174,36 +186,36 @@ function reducer(state: PrintToolState, action: PrintToolAction): PrintToolState
         layoutInfo: action.payload
       }
 
-    case 'SET_COLLAGE_IMAGES':
+    case 'POOL_ADD': {
+      const current = state[action.pool]
+      // Type assertion: the discriminated union guarantees the payload type
+      // matches the pool, but TS can't follow it through the index access.
+      const next = [...current, ...action.payload] as typeof current
       return {
         ...state,
-        collageImages: action.payload,
+        [action.pool]: next,
         result: null,
-        collageResult: null
+        ...(action.pool === 'collageImages' ? { collageResult: null } : {})
       }
+    }
 
-    case 'ADD_COLLAGE_IMAGES':
+    case 'POOL_REMOVE': {
+      const current = state[action.pool]
+      const next = current.filter(img => img.id !== action.payload) as typeof current
       return {
         ...state,
-        collageImages: [...state.collageImages, ...action.payload],
+        [action.pool]: next,
         result: null,
-        collageResult: null
+        ...(action.pool === 'collageImages' ? { collageResult: null } : {})
       }
+    }
 
-    case 'REMOVE_COLLAGE_IMAGE':
+    case 'POOL_CLEAR':
       return {
         ...state,
-        collageImages: state.collageImages.filter(img => img.id !== action.payload),
+        [action.pool]: [],
         result: null,
-        collageResult: null
-      }
-
-    case 'CLEAR_COLLAGE_IMAGES':
-      return {
-        ...state,
-        collageImages: [],
-        result: null,
-        collageResult: null
+        ...(action.pool === 'collageImages' ? { collageResult: null } : {})
       }
 
     case 'SET_COLLAGE_SETTINGS':
@@ -218,6 +230,28 @@ function reducer(state: PrintToolState, action: PrintToolAction): PrintToolState
       return {
         ...state,
         collageResult: action.payload
+      }
+
+    case 'SET_MTG_INPUT_MODE':
+      return {
+        ...state,
+        mtgInputMode: action.payload,
+        result: null,
+        error: null
+      }
+
+    case 'SET_MTG_INPUT':
+      return {
+        ...state,
+        mtgInput: action.payload,
+        result: null
+      }
+
+    case 'SET_STICKER_SETTINGS':
+      return {
+        ...state,
+        stickerSettings: { ...state.stickerSettings, ...action.payload },
+        result: null
       }
 
     case 'RESET':
@@ -311,27 +345,18 @@ export function usePrintTool() {
     dispatch({ type: 'SET_ERROR', payload: error })
   }, [])
 
-  const reset = useCallback(() => {
-    dispatch({ type: 'RESET' })
-    logger.info('[usePrintTool] State reset')
-  }, [])
-
-  // Collage action creators
-  const setCollageImages = useCallback((images: CollagePoolImage[]) => {
-    dispatch({ type: 'SET_COLLAGE_IMAGES', payload: images })
-  }, [])
-
+  // Collage action creators (image pool uses generic POOL_*)
   const addCollageImages = useCallback((images: CollagePoolImage[]) => {
-    dispatch({ type: 'ADD_COLLAGE_IMAGES', payload: images })
+    dispatch({ type: 'POOL_ADD', pool: 'collageImages', payload: images })
     logger.info('[usePrintTool] Added collage images', { count: images.length })
   }, [])
 
   const removeCollageImage = useCallback((id: string) => {
-    dispatch({ type: 'REMOVE_COLLAGE_IMAGE', payload: id })
+    dispatch({ type: 'POOL_REMOVE', pool: 'collageImages', payload: id })
   }, [])
 
   const clearCollageImages = useCallback(() => {
-    dispatch({ type: 'CLEAR_COLLAGE_IMAGES' })
+    dispatch({ type: 'POOL_CLEAR', pool: 'collageImages' })
     logger.info('[usePrintTool] Cleared collage images')
   }, [])
 
@@ -343,20 +368,45 @@ export function usePrintTool() {
     dispatch({ type: 'SET_COLLAGE_RESULT', payload: result })
   }, [])
 
-  // Validation helpers
-  const canProcess = useMemo(() => {
-    // Collage mode needs at least one image in the pool
-    if (state.mode === 'collage') {
-      return state.collageImages.length > 0
-    }
-    if (!state.sourceImage) return false
-    // Calibration mode doesn't need layout - it uses its own grid
-    if (state.mode === 'calibration') return true
-    // Tiling modes need layout
-    if (!state.layoutInfo) return false
-    if (state.mode === 'duplex' && !state.backImage) return false
-    return true
-  }, [state.sourceImage, state.backImage, state.layoutInfo, state.mode, state.collageImages.length])
+  // MTG action creators
+  const setMtgInputMode = useCallback((mode: MtgInputMode) => {
+    dispatch({ type: 'SET_MTG_INPUT_MODE', payload: mode })
+  }, [])
+
+  const setMtgInput = useCallback((input: string) => {
+    dispatch({ type: 'SET_MTG_INPUT', payload: input })
+  }, [])
+
+  const addMtgCustomImages = useCallback((images: MtgCustomImage[]) => {
+    dispatch({ type: 'POOL_ADD', pool: 'mtgCustomImages', payload: images })
+    logger.info('[usePrintTool] Added MTG custom images', { count: images.length })
+  }, [])
+
+  const removeMtgCustomImage = useCallback((id: string) => {
+    dispatch({ type: 'POOL_REMOVE', pool: 'mtgCustomImages', payload: id })
+  }, [])
+
+  const clearMtgCustomImages = useCallback(() => {
+    dispatch({ type: 'POOL_CLEAR', pool: 'mtgCustomImages' })
+  }, [])
+
+  // Sticker action creators
+  const addStickerImages = useCallback((images: StickerImage[]) => {
+    dispatch({ type: 'POOL_ADD', pool: 'stickerImages', payload: images })
+    logger.info('[usePrintTool] Added sticker images', { count: images.length })
+  }, [])
+
+  const removeStickerImage = useCallback((id: string) => {
+    dispatch({ type: 'POOL_REMOVE', pool: 'stickerImages', payload: id })
+  }, [])
+
+  const clearStickerImages = useCallback(() => {
+    dispatch({ type: 'POOL_CLEAR', pool: 'stickerImages' })
+  }, [])
+
+  const setStickerSettings = useCallback((settings: Partial<StickerSettings>) => {
+    dispatch({ type: 'SET_STICKER_SETTINGS', payload: settings })
+  }, [])
 
   return {
     state,
@@ -375,15 +425,22 @@ export function usePrintTool() {
     setProcessing,
     setResult,
     setError,
-    reset,
     // Collage actions
-    setCollageImages,
     addCollageImages,
     removeCollageImage,
     clearCollageImages,
     setCollageSettings,
     setCollageResult,
-    // Helpers
-    canProcess
+    // MTG actions
+    setMtgInputMode,
+    setMtgInput,
+    addMtgCustomImages,
+    removeMtgCustomImage,
+    clearMtgCustomImages,
+    // Sticker actions
+    addStickerImages,
+    removeStickerImage,
+    clearStickerImages,
+    setStickerSettings
   }
 }

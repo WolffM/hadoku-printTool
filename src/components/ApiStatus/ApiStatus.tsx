@@ -3,8 +3,6 @@
  * Displays the status of the backend API connection
  */
 
-import React from 'react'
-
 export type ApiStatusState = 'checking' | 'online' | 'offline'
 
 interface ApiStatusProps {

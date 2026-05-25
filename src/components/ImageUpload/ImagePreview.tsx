@@ -3,7 +3,6 @@
  * Displays an image preview with metadata
  */
 
-import React from 'react'
 import type { ImageFile } from '../../domain/types'
 
 interface ImagePreviewProps {

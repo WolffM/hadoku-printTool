@@ -242,6 +242,96 @@ export async function exportToTiff(imageBase64: string, dpi: number): Promise<Ex
   }
 }
 
+export interface StickerApiInput {
+  filename: string
+  /** Base64 (no data: prefix) */
+  data: string
+}
+
+export interface StickerApiRequest {
+  images: StickerApiInput[]
+  copies?: number
+  size?: number
+  offsetInches?: number
+  test?: boolean
+}
+
+export interface StickerApiResponse {
+  success: boolean
+  data?: {
+    /** Data URL of the resulting JPEG sheet */
+    image: string
+    filename: string
+    sizeBytes: number
+    stdout?: string
+    stderr?: string
+  }
+  error?: string
+}
+
+/**
+ * Run the StickerMaker pipeline via the local Python sidecar.
+ * Requires the local server + Python (rembg, scipy, Pillow) to be available.
+ */
+export async function processSticker(req: StickerApiRequest): Promise<StickerApiResponse> {
+  logger.info('[printToolApi] Processing sticker batch', {
+    count: req.images.length,
+    copies: req.copies,
+    size: req.size,
+    test: req.test
+  })
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/sticker`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req)
+    })
+
+    const data = (await response.json()) as StickerApiResponse
+    if (!response.ok) {
+      const errMsg = data.error || `HTTP error ${response.status}`
+      throw new Error(errMsg)
+    }
+    if (!data.success) {
+      throw new Error(data.error || 'Sticker processing failed')
+    }
+
+    logger.info('[printToolApi] Sticker processing successful', {
+      filename: data.data?.filename,
+      sizeBytes: data.data?.sizeBytes
+    })
+    return data
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    logger.error('[printToolApi] Sticker processing failed', { error: message })
+    return { success: false, error: message }
+  }
+}
+
+/**
+ * Load a data URL into an HTMLCanvasElement for preview.
+ */
+export async function imageDataUrlToCanvas(dataUrl: string): Promise<HTMLCanvasElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        reject(new Error('Failed to get canvas context'))
+        return
+      }
+      ctx.drawImage(img, 0, 0)
+      resolve(canvas)
+    }
+    img.onerror = () => reject(new Error('Failed to load image data URL'))
+    img.src = dataUrl
+  })
+}
+
 /**
  * Check if the backend API is available
  */

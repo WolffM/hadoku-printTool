@@ -1,22 +1,18 @@
 /**
  * ModeSelector Component
- * Segmented button for selecting print mode
+ *
+ * Tab strip across the top of the tool. Driven by the mode registry —
+ * adding a new mode in `src/domain/modes/registry.ts` adds a tab here for
+ * free.
  */
 
-import React from 'react'
 import type { PrintMode } from '../../domain/types'
+import { MODES } from '../../domain/modes'
 
 interface ModeSelectorProps {
   mode: PrintMode
   onModeChange: (mode: PrintMode) => void
 }
-
-const MODES: { id: PrintMode; label: string }[] = [
-  { id: 'simple', label: 'Simple Tiling' },
-  { id: 'duplex', label: 'Postcard Duplex' },
-  { id: 'calibration', label: 'Calibration Sheet' },
-  { id: 'collage', label: 'Collage' }
-]
 
 export function ModeSelector({ mode, onModeChange }: ModeSelectorProps) {
   return (

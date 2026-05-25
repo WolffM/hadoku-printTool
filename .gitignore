@@ -1,6 +1,12 @@
 # Dependencies
 node_modules/
 
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+
 # Build outputs
 dist/
 build/

@@ -3,10 +3,10 @@
  * Settings panel for Calibration Sheet mode
  */
 
-import React from 'react'
 import type { CalibrationGridKey, VariationPresetKey, Variation } from '../../domain/types'
 import { CALIBRATION_GRIDS, CALIBRATION_DPI, VARIATION_PRESETS } from '../../domain/constants'
 import { getVariationPreviewStyle } from '../../domain/processing/variationFilters'
+import { SettingsPanel, SettingsSection, SettingsInfo } from '../shared/SettingsPanel'
 
 interface CalibrationSettingsProps {
   calibrationGrid: CalibrationGridKey
@@ -37,10 +37,8 @@ export function CalibrationSettings({
   const activeVariations = variations.slice(0, totalCells)
 
   return (
-    <div className="printtool-calibration-settings">
-      <div className="printtool-calibration-settings__section">
-        <h3 className="printtool-calibration-settings__title">Grid Settings</h3>
-
+    <SettingsPanel className="printtool-calibration-settings">
+      <SettingsSection title="Grid Settings">
         <div className="printtool-calibration-settings__group">
           <label className="printtool-calibration-settings__label" htmlFor="calib-grid">
             Grid Size
@@ -76,11 +74,9 @@ export function CalibrationSettings({
             ))}
           </select>
         </div>
-      </div>
+      </SettingsSection>
 
-      <div className="printtool-calibration-settings__section">
-        <h3 className="printtool-calibration-settings__title">Variation Preset</h3>
-
+      <SettingsSection title="Variation Preset">
         <div className="printtool-calibration-settings__group">
           <label className="printtool-calibration-settings__label" htmlFor="calib-preset">
             Preset
@@ -145,14 +141,14 @@ export function CalibrationSettings({
             )}
           </div>
         )}
-      </div>
+      </SettingsSection>
 
-      <div className="printtool-calibration-settings__info">
+      <SettingsInfo>
         <p>
           <strong>Note:</strong> The preview shows CSS filter approximations. Final output uses
           ImageMagick for accurate color processing.
         </p>
-      </div>
-    </div>
+      </SettingsInfo>
+    </SettingsPanel>
   )
 }

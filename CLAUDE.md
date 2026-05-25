@@ -13,9 +13,24 @@ Three components: React UI library, CF Worker API, local ImageMagick server.
 - `worker/` — CF Worker API handler. Builds to `dist/worker.js`
   - Entry: `worker/src/index.ts` exports `createPrinttoolHandler(basePath)`
   - OpenAPI schemas in `worker/src/schemas.ts`
-- `server/` — Local-only Node server (NOT published). ImageMagick processing.
+- `server/` — Local-only Node server (NOT published). ImageMagick + Python pipelines.
   - Runs via PM2: `pnpm local:start`
   - Receives requests via Cloudflare Tunnel managed by hadoku-site
+  - `server/python/sticker/` — Python sidecar (sticker pipeline), spawned per request
+  - `server/pyproject.toml` — Python deps (Hatchling), installed into `server/.venv/`
+
+## Python sidecar deps
+
+Per the hadoku ecosystem convention (`personal-dataplatform/server/CLAUDE.md`):
+**per-repo `.venv`**, never global. The Node server resolves the interpreter at
+`server/.venv/Scripts/python.exe` (Windows) or `server/.venv/bin/python`. One-time
+setup:
+
+```bash
+cd server
+python -m venv .venv
+.venv/Scripts/pip install -e .
+```
 
 ## Contracts
 
@@ -32,6 +47,7 @@ Peer dependencies (provided by parent): react, react-dom, @wolffm/themes, @wolff
 
 - `pnpm build` — runs three steps: vite build (UI), vite build (worker), tsc (declarations)
 - `pnpm dev` — starts PM2 local server + vite dev server with proxy to localhost:8787
+- `pnpm test` — runs vitest (happy-dom env, canvas is mocked via `src/test-utils/canvasMock.ts`, pica is mocked per-file)
 
 ## Does NOT
 

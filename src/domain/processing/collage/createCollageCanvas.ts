@@ -4,8 +4,8 @@
  * Creates a canvas with all images placed according to the layout algorithm
  */
 
-import Pica from 'pica'
 import { PAPER_SIZES } from '../../constants'
+import { loadImage, resizeCanvasTransparent, createBlankSheet } from '../canvasUtils'
 import type { CollagePoolImage, CollageLayoutResult, CropAnchor } from '../../types'
 import type { CreateCollageParams, CreateCollageResult, PlacedImage } from './types'
 import { generateSeed } from './randomization'
@@ -16,8 +16,6 @@ export interface CollageProgress {
   total: number
   message: string
 }
-
-const pica = new Pica()
 
 /**
  * Create a collage canvas from a pool of images
@@ -85,19 +83,8 @@ export async function createCollageCanvas(
   // Create canvas at target DPI
   const canvasWidth = Math.round(pageWidthInches * settings.dpi)
   const canvasHeight = Math.round(pageHeightInches * settings.dpi)
-
-  const canvas = document.createElement('canvas')
-  canvas.width = canvasWidth
-  canvas.height = canvasHeight
-
-  const ctx = canvas.getContext('2d')
-  if (!ctx) {
-    throw new Error('Failed to get canvas context')
-  }
-
-  // Fill with white background
-  ctx.fillStyle = '#ffffff'
-  ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+  const canvas = createBlankSheet(canvasWidth, canvasHeight, '#ffffff')
+  const ctx = canvas.getContext('2d')!
 
   // Create a map for quick image lookup
   const imageMap = new Map<string, CollagePoolImage>()
@@ -189,27 +176,9 @@ async function renderPlacedImage(
     tempCtx.drawImage(img, -srcX, -srcY)
   }
 
-  // Use Pica for high-quality resize
-  const destCanvas = document.createElement('canvas')
-  destCanvas.width = destWidth
-  destCanvas.height = destHeight
-
-  await pica.resize(tempCanvas, destCanvas, {
-    quality: 3,
-    alpha: true
-  })
-
-  // Draw to main canvas
+  // Lanczos resize via shared pica (preserves alpha)
+  const destCanvas = await resizeCanvasTransparent(tempCanvas, destWidth, destHeight)
   ctx.drawImage(destCanvas, destX, destY)
-}
-
-function loadImage(dataUrl: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.onload = () => resolve(img)
-    img.onerror = reject
-    img.src = dataUrl
-  })
 }
 
 interface CropResult {

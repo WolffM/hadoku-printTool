@@ -22,6 +22,7 @@ import {
   generateCalibrationSheetWithProgress,
   exportImage
 } from './imagemagick.js'
+import { processSticker, checkStickerEnvironment, type StickerImageInput } from './sticker.js'
 
 const app = new Hono().basePath('/printtool/api')
 
@@ -30,15 +31,25 @@ app.use('*', cors())
 
 // Health check
 app.get('/health', async c => {
-  const hasImageMagick = await checkImageMagick()
+  const [hasImageMagick, stickerEnv] = await Promise.all([
+    checkImageMagick(),
+    checkStickerEnvironment()
+  ])
+  const warnings: string[] = []
+  if (!hasImageMagick) warnings.push('ImageMagick not found in PATH')
+  if (!stickerEnv.python) warnings.push('Python not found — sticker mode disabled')
+  else if (!stickerEnv.rembg) warnings.push('Python `rembg` not installed — sticker mode disabled')
+  else if (!stickerEnv.scipy) warnings.push('Python `scipy` not installed — sticker mode disabled')
+
   return c.json({
     success: true,
     data: {
-      status: hasImageMagick ? 'healthy' : 'degraded',
+      status: hasImageMagick && stickerEnv.python ? 'healthy' : 'degraded',
       service: 'printtool-local',
       timestamp: new Date().toISOString(),
       imagemagick: hasImageMagick,
-      ...(hasImageMagick ? {} : { warning: 'ImageMagick not found in PATH' })
+      sticker: stickerEnv,
+      ...(warnings.length > 0 ? { warning: warnings.join('; ') } : {})
     }
   })
 })
@@ -171,6 +182,62 @@ app.post('/export', async c => {
   }
 })
 
+// Sticker endpoint — spawns the Python sidecar pipeline
+app.post('/sticker', async c => {
+  try {
+    const body = (await c.req.json()) as {
+      images?: { filename?: string; data?: string }[]
+      copies?: number
+      size?: number
+      offsetInches?: number
+      test?: boolean
+    }
+
+    if (!body.images || !Array.isArray(body.images) || body.images.length === 0) {
+      return c.json({ success: false, error: 'Missing images array' }, 400)
+    }
+
+    const stickerImages: StickerImageInput[] = body.images.map((img, idx) => {
+      if (!img.data) {
+        throw new Error(`images[${idx}] missing data`)
+      }
+      const base64 = img.data.replace(/^data:image\/\w+;base64,/, '')
+      return {
+        filename: img.filename || `image_${idx}.png`,
+        data: Buffer.from(base64, 'base64')
+      }
+    })
+
+    const result = await processSticker({
+      images: stickerImages,
+      copies: body.copies,
+      size: body.size,
+      offsetInches: body.offsetInches,
+      test: body.test
+    })
+
+    return c.json({
+      success: true,
+      data: {
+        image: `data:image/jpeg;base64,${result.data.toString('base64')}`,
+        filename: result.filename,
+        sizeBytes: result.data.length,
+        stdout: result.stdout,
+        stderr: result.stderr
+      }
+    })
+  } catch (err) {
+    console.error('Sticker error:', err)
+    return c.json(
+      {
+        success: false,
+        error: err instanceof Error ? err.message : 'Unknown error'
+      },
+      500
+    )
+  }
+})
+
 // 404 handler
 app.notFound(c => {
   return c.json({ success: false, error: 'Route not found' }, 404)
@@ -201,6 +268,7 @@ async function main() {
   console.log(`  GET  /printtool/api/health`)
   console.log(`  POST /printtool/api/calibration`)
   console.log(`  POST /printtool/api/export`)
+  console.log(`  POST /printtool/api/sticker`)
   console.log('')
   console.log('Ensure Cloudflare Tunnel is running to receive requests from hadoku.me')
 

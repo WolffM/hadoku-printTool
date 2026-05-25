@@ -3,8 +3,6 @@
  * Full-screen overlay with spinner and progress for processing operations
  */
 
-import React from 'react'
-
 export interface ProcessingProgress {
   step: number
   total: number

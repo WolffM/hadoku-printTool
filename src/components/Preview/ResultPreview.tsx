@@ -3,7 +3,7 @@
  * Displays the processed output canvas with front/back toggle for duplex
  */
 
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { ProcessedResult, PrintMode } from '../../domain/types'
 
 interface ResultPreviewProps {
@@ -13,15 +13,31 @@ interface ResultPreviewProps {
 
 export function ResultPreview({ result, mode }: ResultPreviewProps) {
   const [showBack, setShowBack] = useState(false)
+  const [sheetIndex, setSheetIndex] = useState(0)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  const isDuplex = mode === 'duplex' && result?.backCanvas
+  // Reset sheet/back toggles when a new result comes in
+  useEffect(() => {
+    setShowBack(false)
+    setSheetIndex(0)
+  }, [result])
+
+  const sheets = result?.sheets
+  const activeSheet = sheets && sheets[sheetIndex] ? sheets[sheetIndex] : null
+
+  const isDuplex = (mode === 'duplex' && result?.backCanvas) || activeSheet?.back !== undefined
 
   // Draw the result canvas to the preview canvas
   useEffect(() => {
     if (!result || !canvasRef.current) return
 
-    const sourceCanvas = showBack && result.backCanvas ? result.backCanvas : result.frontCanvas
+    let sourceCanvas: HTMLCanvasElement
+    if (activeSheet) {
+      sourceCanvas = showBack && activeSheet.back ? activeSheet.back : activeSheet.front
+    } else {
+      sourceCanvas = showBack && result.backCanvas ? result.backCanvas : result.frontCanvas
+    }
+
     const previewCanvas = canvasRef.current
     const ctx = previewCanvas.getContext('2d')
 
@@ -45,7 +61,7 @@ export function ResultPreview({ result, mode }: ResultPreviewProps) {
 
     // Draw scaled preview
     ctx.drawImage(sourceCanvas, 0, 0, previewWidth, previewHeight)
-  }, [result, showBack])
+  }, [result, showBack, activeSheet])
 
   if (!result) {
     return (
@@ -57,8 +73,36 @@ export function ResultPreview({ result, mode }: ResultPreviewProps) {
     )
   }
 
+  const multiSheet = sheets && sheets.length > 1
+
   return (
     <div className="printtool-result-preview">
+      {multiSheet && (
+        <div className="printtool-result-preview__sheet-picker">
+          <button
+            type="button"
+            className="printtool-result-preview__sheet-nav"
+            onClick={() => setSheetIndex(Math.max(0, sheetIndex - 1))}
+            disabled={sheetIndex === 0}
+            aria-label="Previous sheet"
+          >
+            ‹
+          </button>
+          <span className="printtool-result-preview__sheet-label">
+            Sheet {sheetIndex + 1} of {sheets.length}
+          </span>
+          <button
+            type="button"
+            className="printtool-result-preview__sheet-nav"
+            onClick={() => setSheetIndex(Math.min(sheets.length - 1, sheetIndex + 1))}
+            disabled={sheetIndex === sheets.length - 1}
+            aria-label="Next sheet"
+          >
+            ›
+          </button>
+        </div>
+      )}
+
       {isDuplex && (
         <div className="printtool-result-preview__toggle">
           <button

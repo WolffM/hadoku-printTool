@@ -3,9 +3,9 @@
  * Additional settings panel for Duplex (double-sided) printing mode
  */
 
-import React from 'react'
 import type { ImageFile } from '../../domain/types'
 import { ImageUpload } from '../ImageUpload/ImageUpload'
+import { SettingsPanel, SettingsSection, SettingsInfo } from '../shared/SettingsPanel'
 
 interface DuplexSettingsProps {
   backImage: ImageFile | null
@@ -18,7 +18,6 @@ export function DuplexSettings({
   onBackImageChange,
   frontImageOrientation
 }: DuplexSettingsProps) {
-  // Check if orientations match (for warning display)
   const backImageOrientation = backImage
     ? backImage.width < backImage.height
       ? 'portrait'
@@ -29,13 +28,11 @@ export function DuplexSettings({
     frontImageOrientation && backImageOrientation && frontImageOrientation !== backImageOrientation
 
   return (
-    <div className="printtool-duplex-settings">
-      <div className="printtool-duplex-settings__section">
-        <h3 className="printtool-duplex-settings__title">Back Image</h3>
-        <p className="printtool-duplex-settings__description">
-          Upload the image for the back side of the postcards
-        </p>
-
+    <SettingsPanel className="printtool-duplex-settings">
+      <SettingsSection
+        title="Back Image"
+        description="Upload the image for the back side of the postcards"
+      >
         <ImageUpload
           image={backImage}
           onImageSelect={onBackImageChange}
@@ -53,13 +50,13 @@ export function DuplexSettings({
           </div>
         )}
 
-        <div className="printtool-duplex-settings__info">
+        <SettingsInfo>
           <p>
             <strong>Note:</strong> The back sheet will be automatically mirrored horizontally so
             that cards align correctly when printed double-sided (flip on long edge).
           </p>
-        </div>
-      </div>
-    </div>
+        </SettingsInfo>
+      </SettingsSection>
+    </SettingsPanel>
   )
 }

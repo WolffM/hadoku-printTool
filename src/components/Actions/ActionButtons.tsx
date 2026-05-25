@@ -3,7 +3,7 @@
  * Process and Download buttons for the Print Tool
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { logger } from '@wolffm/task-ui-components'
 import type { PrintMode, ProcessedResult } from '../../domain/types'
 import {
@@ -57,6 +57,21 @@ export function ActionButtons({
       : `print-output${suffix}.png`
     downloadCanvasAsPng(canvas, filename)
     logger.info('[ActionButtons] PNG downloaded', { filename })
+  }
+
+  const handleDownloadAllSheets = async (kind: 'png' | 'tiff') => {
+    if (!result?.sheets) return
+    for (let i = 0; i < result.sheets.length; i++) {
+      const sheet = result.sheets[i]
+      const sheetNum = i + 1
+      if (kind === 'png') {
+        handleDownloadPng(sheet.front, `_sheet${sheetNum}_front`)
+        if (sheet.back) handleDownloadPng(sheet.back, `_sheet${sheetNum}_back`)
+      } else {
+        await handleDownloadTiff(sheet.front, `_sheet${sheetNum}_front`)
+        if (sheet.back) await handleDownloadTiff(sheet.back, `_sheet${sheetNum}_back`)
+      }
+    }
   }
 
   const handleDownloadTiff = async (canvas: HTMLCanvasElement, suffix = '') => {
@@ -125,6 +140,38 @@ export function ActionButtons({
           )}
         </button>
       </div>
+
+      {result && result.sheets && result.sheets.length > 1 && (
+        <div className="printtool-actions__downloads">
+          <div className="printtool-actions__download-group">
+            <span className="printtool-actions__download-label">
+              All {result.sheets.length} Sheets
+            </span>
+            <div className="printtool-actions__download-buttons">
+              <button
+                type="button"
+                className="printtool-actions__button printtool-actions__button--secondary"
+                onClick={() => {
+                  void handleDownloadAllSheets('png')
+                }}
+                disabled={isExporting}
+              >
+                PNG
+              </button>
+              <button
+                type="button"
+                className="printtool-actions__button printtool-actions__button--secondary"
+                onClick={() => {
+                  void handleDownloadAllSheets('tiff')
+                }}
+                disabled={isExporting}
+              >
+                {isExporting ? 'Exporting...' : 'TIFF'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {result && (
         <div className="printtool-actions__downloads">

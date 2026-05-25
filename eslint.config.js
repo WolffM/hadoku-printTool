@@ -13,6 +13,7 @@ export default [
       '**/*.test.ts',
       '**/*.test.tsx',
       '**/vite.config.ts',
+      '**/vitest.config.ts',
       '**/server/**'
     ]
   },

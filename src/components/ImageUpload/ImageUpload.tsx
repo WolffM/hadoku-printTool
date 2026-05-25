@@ -1,176 +1,107 @@
 /**
- * ImageUpload Component
- * Drag-and-drop zone with file picker button
+ * ImageUpload — single-image drag-and-drop + file picker.
+ *
+ * Self-contained: parent provides `image`, `onImageSelect`. Internal state
+ * tracks loading/error during file decode. Multi-image flows use
+ * `<ImagePool>` instead.
  */
 
-import React, { useRef, useState, useCallback } from 'react'
+import {
+  useRef,
+  useState,
+  useCallback,
+  type DragEvent,
+  type ChangeEvent,
+  type KeyboardEvent
+} from 'react'
 import { logger } from '@wolffm/task-ui-components'
 import type { ImageFile } from '../../domain/types'
-import { ACCEPTED_EXTENSIONS, ACCEPTED_IMAGE_TYPES } from '../../domain/constants'
+import { ACCEPTED_EXTENSIONS } from '../../domain/constants'
+import { loadImageFile } from '../../hooks/loadImageFile'
 import { ImagePreview } from './ImagePreview'
 
 interface ImageUploadProps {
-  /** Controlled image (when using with useImageUpload hook) */
-  image?: ImageFile | null
-  isLoading?: boolean
-  error?: string | null
-  onDrop?: (e: React.DragEvent) => Promise<void>
-  onInputChange?: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>
-  onClear?: () => void
+  image: ImageFile | null
+  onImageSelect: (image: ImageFile | null) => void
+  /** Label shown above the dropzone (full mode) or as the dropzone text (compact). */
   label?: string
-  /** Simplified callback for standalone usage */
-  onImageSelect?: (image: ImageFile | null) => void
-  /** Compact mode for secondary uploads */
+  /** Smaller variant, used for secondary uploads (e.g. duplex back image). */
   compact?: boolean
-}
-
-/**
- * Load an image file and extract metadata (for standalone mode)
- */
-async function loadImageFile(file: File): Promise<ImageFile> {
-  return new Promise((resolve, reject) => {
-    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-      reject(new Error(`Unsupported file type: ${file.type}`))
-      return
-    }
-
-    const reader = new FileReader()
-    reader.onload = e => {
-      const dataUrl = e.target?.result as string
-      const img = new Image()
-      img.onload = () => {
-        resolve({
-          file,
-          dataUrl,
-          width: img.naturalWidth,
-          height: img.naturalHeight,
-          aspectRatio: img.naturalWidth / img.naturalHeight,
-          name: file.name
-        })
-      }
-      img.onerror = () => reject(new Error('Failed to load image'))
-      img.src = dataUrl
-    }
-    reader.onerror = () => reject(new Error('Failed to read file'))
-    reader.readAsDataURL(file)
-  })
 }
 
 export function ImageUpload({
   image,
-  isLoading: externalLoading,
-  error: externalError,
-  onDrop: externalOnDrop,
-  onInputChange: externalOnInputChange,
-  onClear: externalOnClear,
-  label = 'Source Image',
   onImageSelect,
+  label = 'Source Image',
   compact = false
 }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragOver, setIsDragOver] = useState(false)
-  const [internalLoading, setInternalLoading] = useState(false)
-  const [internalError, setInternalError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  // Use external state if provided, otherwise internal
-  const isLoading = externalLoading ?? internalLoading
-  const error = externalError ?? internalError
-
-  // Standalone file handler
-  const handleFileStandalone = useCallback(
+  const handleFile = useCallback(
     async (file: File) => {
-      if (!onImageSelect) return
-      setInternalLoading(true)
-      setInternalError(null)
+      setIsLoading(true)
+      setError(null)
       try {
         const imageFile = await loadImageFile(file)
         onImageSelect(imageFile)
-        logger.info('[ImageUpload] Image loaded (standalone)', { name: imageFile.name })
+        logger.info('[ImageUpload] Image loaded', { name: imageFile.name })
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to load image'
-        setInternalError(message)
+        setError(message)
         logger.error('[ImageUpload] Error loading image', { error: message })
       } finally {
-        setInternalLoading(false)
+        setIsLoading(false)
       }
     },
     [onImageSelect]
   )
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
+  const handleDragOver = useCallback((e: DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragOver(true)
   }, [])
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
+  const handleDragLeave = useCallback((e: DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragOver(false)
   }, [])
 
-  const handleDropAsync = useCallback(
-    async (e: React.DragEvent) => {
+  const handleDrop = useCallback(
+    (e: DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
       setIsDragOver(false)
-
-      if (externalOnDrop) {
-        await externalOnDrop(e)
-      } else if (onImageSelect) {
-        const file = e.dataTransfer.files[0]
-        if (file) await handleFileStandalone(file)
-      }
+      const file = e.dataTransfer.files[0]
+      if (file) void handleFile(file)
     },
-    [externalOnDrop, onImageSelect, handleFileStandalone]
-  )
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      handleDropAsync(e).catch(() => {
-        // Error handled in handleFileStandalone
-      })
-    },
-    [handleDropAsync]
-  )
-
-  const handleInputChangeAsync = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (externalOnInputChange) {
-        await externalOnInputChange(e)
-      } else if (onImageSelect) {
-        const file = e.target.files?.[0]
-        if (file) await handleFileStandalone(file)
-      }
-      e.target.value = ''
-    },
-    [externalOnInputChange, onImageSelect, handleFileStandalone]
+    [handleFile]
   )
 
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      handleInputChangeAsync(e).catch(() => {
-        // Error handled in handleFileStandalone
-      })
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (file) void handleFile(file)
+      e.target.value = ''
     },
-    [handleInputChangeAsync]
+    [handleFile]
   )
 
   const handleClear = useCallback(() => {
-    if (externalOnClear) {
-      externalOnClear()
-    } else if (onImageSelect) {
-      onImageSelect(null)
-      setInternalError(null)
-    }
-  }, [externalOnClear, onImageSelect])
+    onImageSelect(null)
+    setError(null)
+  }, [onImageSelect])
 
   const handleClick = useCallback(() => {
     inputRef.current?.click()
   }, [])
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
+    (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault()
         handleClick()

@@ -1,0 +1,481 @@
+/**
+ * Images — single-image upload (with preview), multi-image pool (with
+ * thumbnails + drag-drop progress), and the result preview (canvas + sheet
+ * picker for multi-sheet output).
+ */
+
+/* ImagePool — shared multi-image upload + thumbnail grid */
+.printtool-image-pool {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius, 8px);
+}
+
+.printtool-image-pool__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.printtool-image-pool__header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.printtool-image-pool__title {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text, #000000);
+}
+
+.printtool-image-pool__clear-btn {
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #64748b);
+  cursor: pointer;
+}
+
+.printtool-image-pool__dropzone {
+  position: relative;
+  padding: 1.5rem;
+  border: 2px dashed var(--color-border, #e5e7eb);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  background-color: var(--color-bg-alt, #f9fafb);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.printtool-image-pool__dropzone:focus {
+  outline: 2px solid var(--color-primary, #3b82f6);
+  outline-offset: -2px;
+}
+
+.printtool-image-pool__dropzone--dragover {
+  border-color: var(--color-primary, #3b82f6);
+  background-color: var(--color-bg-card, #ffffff);
+}
+
+.printtool-image-pool__dropzone--loading {
+  cursor: progress;
+}
+
+.printtool-image-pool__input {
+  display: none;
+}
+
+.printtool-image-pool__dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.printtool-image-pool__dropzone-icon {
+  font-size: 1.5rem;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-image-pool__dropzone-text {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-image-pool__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.printtool-image-pool__spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-border, #e5e7eb);
+  border-top-color: var(--color-primary, #3b82f6);
+  border-radius: 50%;
+  animation: printtool-spin 0.6s linear infinite;
+}
+
+.printtool-image-pool__loading-text {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-image-pool__loading-bar {
+  width: 100%;
+  height: 4px;
+  background-color: var(--color-border, #e5e7eb);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.printtool-image-pool__loading-fill {
+  height: 100%;
+  background-color: var(--color-primary, #3b82f6);
+  transition: width 0.15s ease;
+}
+
+.printtool-image-pool__thumbnails {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 0.5rem;
+}
+
+.printtool-image-pool__thumbnail {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: calc(var(--border-radius, 8px) - 4px);
+  overflow: hidden;
+  background-color: var(--color-bg-alt, #f3f4f6);
+}
+
+.printtool-image-pool__thumbnail--highlighted {
+  outline: 2px solid var(--color-primary, #3b82f6);
+  outline-offset: -1px;
+}
+
+.printtool-image-pool__thumbnail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.printtool-image-pool__thumbnail-remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.printtool-image-pool__thumbnail-remove:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.printtool-image-pool__stats {
+  display: flex;
+  gap: 0.5rem;
+  font-size: var(--font-size-xs, 0.75rem);
+}
+
+.printtool-image-pool__stat {
+  padding: 0.125rem 0.4rem;
+  border-radius: 12px;
+  background: var(--color-bg-alt, #f3f4f6);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-image-pool__stat--used {
+  background: var(--color-success-bg, #dcfce7);
+  color: var(--color-success, #16a34a);
+}
+
+.printtool-image-pool__stat--unused {
+  background: var(--color-warning-bg, #fef9c3);
+  color: var(--color-warning, #ca8a04);
+}
+
+.printtool-image-pool__used-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-success, #16a34a);
+  border-radius: 50%;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+@keyframes printtool-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ImageUpload — single-image drag-and-drop + file picker */
+.printtool-image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.printtool-image-upload--compact {
+  gap: 0.25rem;
+}
+
+.printtool-image-upload__label {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text, #000000);
+}
+
+.printtool-image-upload__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  border: 2px dashed var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius, 8px);
+  background-color: var(--color-bg-card, #ffffff);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.printtool-image-upload__dropzone:hover,
+.printtool-image-upload__dropzone--active {
+  border-color: var(--color-primary, #0066cc);
+  background-color: var(--color-primary-bg, #eff6ff);
+}
+
+.printtool-image-upload__dropzone--error {
+  border-color: var(--color-danger, #ef4444);
+}
+
+.printtool-image-upload__dropzone--compact {
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.printtool-image-upload__icon {
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.printtool-image-upload__text {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #64748b);
+  text-align: center;
+}
+
+.printtool-image-upload__hint {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.printtool-image-upload__loading {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-image-upload__error {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-danger, #ef4444);
+}
+
+.printtool-image-upload__input {
+  display: none;
+}
+
+/* ImagePreview — thumbnail of a single uploaded image */
+.printtool-image-preview {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: var(--color-bg-alt, #f9fafb);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius, 8px);
+}
+
+.printtool-image-preview--compact {
+  padding: 0.5rem;
+}
+
+.printtool-image-preview__label {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-image-preview__container {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: calc(var(--border-radius, 8px) - 4px);
+}
+
+.printtool-image-preview__image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.printtool-image-preview__info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.printtool-image-preview__info--compact {
+  justify-content: center;
+}
+
+.printtool-image-preview__name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.printtool-image-preview__clear {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--color-bg-card, #ffffff);
+  color: var(--color-text-secondary, #64748b);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+  transition: all 0.2s ease;
+}
+
+.printtool-image-preview__clear:hover {
+  background-color: var(--color-danger, #ef4444);
+  color: white;
+}
+
+/* ResultPreview — final processed canvas, with multi-sheet picker */
+.printtool-result-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius, 8px);
+  min-height: 300px;
+}
+
+.printtool-result-preview--empty {
+  justify-content: center;
+  align-items: center;
+}
+
+.printtool-result-preview__placeholder {
+  text-align: center;
+  color: var(--color-text-secondary, #64748b);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.printtool-result-preview__toggle {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background-color: var(--color-bg-alt, #f3f4f6);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  align-self: center;
+}
+
+.printtool-result-preview__toggle-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: calc(var(--border-radius, 8px) - 4px);
+  background-color: transparent;
+  color: var(--color-text-secondary, #64748b);
+  font-size: var(--font-size-sm, 0.875rem);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.printtool-result-preview__toggle-btn:hover {
+  background-color: var(--color-bg-hover, #e5e7eb);
+}
+
+.printtool-result-preview__toggle-btn--active {
+  background-color: var(--color-bg-card, #ffffff);
+  color: var(--color-primary, #0066cc);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.printtool-result-preview__canvas-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  overflow: hidden;
+}
+
+.printtool-result-preview__canvas {
+  max-width: 100%;
+  max-height: 100%;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: calc(var(--border-radius, 8px) - 4px);
+}
+
+.printtool-result-preview__info {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+/* Multi-sheet picker (used by MTG mode when input > 9 cards) */
+.printtool-result-preview__sheet-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+.printtool-result-preview__sheet-nav {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 50%;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--color-text, #000000);
+  cursor: pointer;
+}
+
+.printtool-result-preview__sheet-nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.printtool-result-preview__sheet-label {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #64748b);
+}

@@ -7,6 +7,7 @@ import React from 'react'
 import type { PaperSizeKey, TileSizeKey, PositionOption, LayoutInfo } from '../../domain/types'
 import { PAPER_SIZES, TILE_SIZES, POSITION_OPTIONS } from '../../domain/constants'
 import { formatLayoutInfo } from '../../domain/processing'
+import { SettingsPanel } from '../shared/SettingsPanel'
 
 interface TilingSettingsProps {
   paperSize: PaperSizeKey
@@ -41,7 +42,7 @@ export function TilingSettings({
   }
 
   return (
-    <div className="printtool-settings">
+    <SettingsPanel>
       <div className="printtool-settings__group">
         <label className="printtool-settings__label" htmlFor="paper-size">
           Output Paper
@@ -130,6 +131,6 @@ export function TilingSettings({
           Card is too large for selected paper size
         </div>
       )}
-    </div>
+    </SettingsPanel>
   )
 }
