@@ -1,54 +1,77 @@
 import { describe, it, expect } from 'vitest'
-import { parseMtgLine, parseMtgInput } from './parseInput'
+import { mtgSource } from './mtg'
+import { parseDeckList } from '../types'
 
-describe('parseMtgLine', () => {
+const parseLine = mtgSource.parseLine.bind(mtgSource)
+
+describe('mtgSource.parseLine', () => {
   it('parses a full Scryfall URL', () => {
-    const entry = parseMtgLine('https://scryfall.com/card/m10/150/lightning-bolt')
-    expect(entry).toEqual({
+    const entry = parseLine('https://scryfall.com/card/m10/150/lightning-bolt')
+    expect(entry).toMatchObject({
       raw: 'https://scryfall.com/card/m10/150/lightning-bolt',
       url: 'https://scryfall.com/card/m10/150/lightning-bolt',
       setCode: 'm10',
-      collectorNumber: '150'
+      collectorNumber: '150',
+      count: 1
     })
   })
 
   it('parses a Scryfall URL with http (not https)', () => {
-    const entry = parseMtgLine('http://scryfall.com/card/neo/238/the-wandering-emperor')
+    const entry = parseLine('http://scryfall.com/card/neo/238/the-wandering-emperor')
     expect(entry?.url).toBe('http://scryfall.com/card/neo/238/the-wandering-emperor')
     expect(entry?.setCode).toBe('neo')
     expect(entry?.collectorNumber).toBe('238')
   })
 
   it('parses a fully-qualified comma row', () => {
-    expect(parseMtgLine('Lightning Bolt, M10, 150')).toEqual({
+    expect(parseLine('Lightning Bolt, M10, 150')).toMatchObject({
       raw: 'Lightning Bolt, M10, 150',
       name: 'Lightning Bolt',
       setCode: 'M10',
-      collectorNumber: '150'
+      collectorNumber: '150',
+      count: 1
     })
   })
 
   it('parses a name + set row (no collector number)', () => {
-    expect(parseMtgLine('Sol Ring, c21')).toEqual({
+    expect(parseLine('Sol Ring, c21')).toMatchObject({
       raw: 'Sol Ring, c21',
       name: 'Sol Ring',
       setCode: 'c21',
-      collectorNumber: undefined
+      collectorNumber: undefined,
+      count: 1
     })
   })
 
   it('parses a bare name (search-only)', () => {
-    expect(parseMtgLine('Black Lotus')).toEqual({
+    expect(parseLine('Black Lotus')).toMatchObject({
       raw: 'Black Lotus',
       name: 'Black Lotus',
       setCode: undefined,
-      collectorNumber: undefined
+      collectorNumber: undefined,
+      count: 1
+    })
+  })
+
+  it('strips a leading count: "3 Lightning Bolt, M10, 150"', () => {
+    expect(parseLine('3 Lightning Bolt, M10, 150')).toMatchObject({
+      name: 'Lightning Bolt',
+      setCode: 'M10',
+      collectorNumber: '150',
+      count: 3
+    })
+  })
+
+  it('strips a leading count with "x" suffix: "4x Sol Ring, c21"', () => {
+    expect(parseLine('4x Sol Ring, c21')).toMatchObject({
+      name: 'Sol Ring',
+      setCode: 'c21',
+      count: 4
     })
   })
 
   it('trims whitespace around commas', () => {
-    expect(parseMtgLine('  Lightning Bolt  ,   M10   ,  150  ')).toEqual({
-      raw: 'Lightning Bolt  ,   M10   ,  150',
+    expect(parseLine('  Lightning Bolt  ,   M10   ,  150  ')).toMatchObject({
       name: 'Lightning Bolt',
       setCode: 'M10',
       collectorNumber: '150'
@@ -56,18 +79,18 @@ describe('parseMtgLine', () => {
   })
 
   it('returns null for empty lines', () => {
-    expect(parseMtgLine('')).toBeNull()
-    expect(parseMtgLine('   ')).toBeNull()
-    expect(parseMtgLine('\t')).toBeNull()
+    expect(parseLine('')).toBeNull()
+    expect(parseLine('   ')).toBeNull()
+    expect(parseLine('\t')).toBeNull()
   })
 
   it('returns null for comment lines starting with #', () => {
-    expect(parseMtgLine('# this is a comment')).toBeNull()
-    expect(parseMtgLine('  # indented comment')).toBeNull()
+    expect(parseLine('# this is a comment')).toBeNull()
+    expect(parseLine('  # indented comment')).toBeNull()
   })
 })
 
-describe('parseMtgInput', () => {
+describe('parseDeckList with mtgSource', () => {
   it('parses multiple lines, skipping blanks and comments', () => {
     const input = `Lightning Bolt, M10, 150
 # this is a comment
@@ -75,7 +98,7 @@ describe('parseMtgInput', () => {
 Sol Ring, c21, 263
 https://scryfall.com/card/neo/238/the-wandering-emperor`
 
-    const entries = parseMtgInput(input)
+    const entries = parseDeckList(input, mtgSource)
     expect(entries).toHaveLength(3)
     expect(entries[0].name).toBe('Lightning Bolt')
     expect(entries[1].name).toBe('Sol Ring')
@@ -84,11 +107,11 @@ https://scryfall.com/card/neo/238/the-wandering-emperor`
 
   it('handles Windows CRLF line endings', () => {
     const input = 'Lightning Bolt, M10, 150\r\nSol Ring, c21, 263\r\n'
-    expect(parseMtgInput(input)).toHaveLength(2)
+    expect(parseDeckList(input, mtgSource)).toHaveLength(2)
   })
 
   it('returns an empty list for empty / whitespace input', () => {
-    expect(parseMtgInput('')).toEqual([])
-    expect(parseMtgInput('   \n  \n\t')).toEqual([])
+    expect(parseDeckList('', mtgSource)).toEqual([])
+    expect(parseDeckList('   \n  \n\t', mtgSource)).toEqual([])
   })
 })

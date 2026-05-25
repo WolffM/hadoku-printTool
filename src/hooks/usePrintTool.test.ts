@@ -8,7 +8,7 @@
 
 import { describe, it, expect } from 'vitest'
 import { reducer, initialState } from './usePrintTool'
-import type { CollagePoolImage, MtgCustomImage, StickerImage, ImageFile } from '../domain/types'
+import type { CollagePoolImage, TcgCustomImage, StickerImage, ImageFile } from '../domain/types'
 
 function makeImageFile(name: string): ImageFile {
   return {
@@ -25,7 +25,7 @@ function makeCollageImage(id: string): CollagePoolImage {
   return { ...makeImageFile(`${id}.png`), id, selected: false }
 }
 
-function makeMtgImage(id: string): MtgCustomImage {
+function makeTcgImage(id: string): TcgCustomImage {
   return {
     id,
     file: new File([], `${id}.png`),
@@ -89,7 +89,7 @@ describe('reducer — basic state transitions', () => {
   })
 
   it('RESET returns initialState', () => {
-    const dirty = { ...initialState, mode: 'mtg' as const, mtgInput: 'data' }
+    const dirty = { ...initialState, mode: 'tcg' as const, tcgInput: 'data' }
     const next = reducer(dirty, { type: 'RESET' })
     expect(next).toEqual(initialState)
   })
@@ -151,38 +151,38 @@ describe('reducer — POOL_* generic actions (collage)', () => {
     }
     const after = reducer(
       { ...initialState, collageResult: result },
-      { type: 'POOL_CLEAR', pool: 'mtgCustomImages' }
+      { type: 'POOL_CLEAR', pool: 'tcgCustomImages' }
     )
     expect(after.collageResult).toEqual(result)
   })
 })
 
 describe('reducer — POOL_* generic actions (mtg + sticker)', () => {
-  it('POOL_ADD works for mtgCustomImages', () => {
-    const a = makeMtgImage('a')
-    const b = makeMtgImage('b')
+  it('POOL_ADD works for tcgCustomImages', () => {
+    const a = makeTcgImage('a')
+    const b = makeTcgImage('b')
     const after = reducer(initialState, {
       type: 'POOL_ADD',
-      pool: 'mtgCustomImages',
+      pool: 'tcgCustomImages',
       payload: [a, b]
     })
-    expect(after.mtgCustomImages.map(i => i.id)).toEqual(['a', 'b'])
+    expect(after.tcgCustomImages.map(i => i.id)).toEqual(['a', 'b'])
   })
 
-  it('POOL_REMOVE works for mtgCustomImages', () => {
+  it('POOL_REMOVE works for tcgCustomImages', () => {
     const after = reducer(
-      { ...initialState, mtgCustomImages: [makeMtgImage('a'), makeMtgImage('b')] },
-      { type: 'POOL_REMOVE', pool: 'mtgCustomImages', payload: 'b' }
+      { ...initialState, tcgCustomImages: [makeTcgImage('a'), makeTcgImage('b')] },
+      { type: 'POOL_REMOVE', pool: 'tcgCustomImages', payload: 'b' }
     )
-    expect(after.mtgCustomImages.map(i => i.id)).toEqual(['a'])
+    expect(after.tcgCustomImages.map(i => i.id)).toEqual(['a'])
   })
 
-  it('POOL_CLEAR works for mtgCustomImages', () => {
+  it('POOL_CLEAR works for tcgCustomImages', () => {
     const after = reducer(
-      { ...initialState, mtgCustomImages: [makeMtgImage('a')] },
-      { type: 'POOL_CLEAR', pool: 'mtgCustomImages' }
+      { ...initialState, tcgCustomImages: [makeTcgImage('a')] },
+      { type: 'POOL_CLEAR', pool: 'tcgCustomImages' }
     )
-    expect(after.mtgCustomImages).toEqual([])
+    expect(after.tcgCustomImages).toEqual([])
   })
 
   it('POOL_ADD works for stickerImages', () => {
@@ -211,10 +211,10 @@ describe('reducer — POOL_* generic actions (mtg + sticker)', () => {
     expect(after.stickerImages).toEqual([])
   })
 
-  it('SET_MTG_INPUT_MODE clears result and error', () => {
+  it('SET_TCG_INPUT_MODE clears result and error', () => {
     const dirty = { ...initialState, error: 'old' }
-    const after = reducer(dirty, { type: 'SET_MTG_INPUT_MODE', payload: 'custom' })
-    expect(after.mtgInputMode).toBe('custom')
+    const after = reducer(dirty, { type: 'SET_TCG_INPUT_MODE', payload: 'custom' })
+    expect(after.tcgInputMode).toBe('custom')
     expect(after.error).toBeNull()
   })
 
@@ -237,8 +237,8 @@ describe('reducer — generic POOL_* covers all three pools uniformly', () => {
         image: makeCollageImage('a')
       },
       {
-        key: 'mtgCustomImages' as const,
-        image: makeMtgImage('a')
+        key: 'tcgCustomImages' as const,
+        image: makeTcgImage('a')
       },
       {
         key: 'stickerImages' as const,

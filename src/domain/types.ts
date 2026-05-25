@@ -61,20 +61,23 @@ export type PositionOption = (typeof POSITION_OPTIONS)[number]
 export type CalibrationGridKey = keyof typeof CALIBRATION_GRIDS
 export type VariationPresetKey = keyof typeof VARIATION_PRESETS
 
-export type PrintMode = 'simple' | 'duplex' | 'calibration' | 'collage' | 'mtg' | 'sticker'
+export type PrintMode = 'simple' | 'duplex' | 'calibration' | 'collage' | 'tcg' | 'sticker'
 
 // ============================================================================
-// MTG Mode Types
+// TCG Mode Types
 // ============================================================================
 
-/** Input mode for MTG sheets: textarea (Scryfall lookup) vs. uploaded files (custom). */
-export type MtgInputMode = 'list' | 'custom'
+/** Input mode for TCG sheets: textarea (Scryfall/CDN lookup) vs. uploaded files. */
+export type TcgInputMode = 'list' | 'custom'
+
+/** Which game's CardSource is selected. Mirrors the registry key. */
+export type TcgGame = 'mtg' | 'riftbound'
 
 /**
- * Custom-asset image for MTG mode. Structurally identical to PooledImage —
+ * Custom-asset image for TCG mode. Structurally identical to PooledImage —
  * the alias keeps mode-specific intent visible at call sites.
  */
-export type MtgCustomImage = PooledImage
+export type TcgCustomImage = PooledImage
 
 // ============================================================================
 // Sticker Mode Types
@@ -161,10 +164,11 @@ export interface PrintToolState {
   collageSettings: CollageSettings
   collageResult: CollageLayoutResult | null
 
-  // MTG Settings
-  mtgInputMode: MtgInputMode
-  mtgInput: string
-  mtgCustomImages: MtgCustomImage[]
+  // TCG Settings
+  tcgGame: TcgGame
+  tcgInputMode: TcgInputMode
+  tcgInput: string
+  tcgCustomImages: TcgCustomImage[]
 
   // Sticker Settings
   stickerImages: StickerImage[]
@@ -201,17 +205,18 @@ export type PrintToolAction =
   | { type: 'SET_LAYOUT_INFO'; payload: LayoutInfo | null }
   | { type: 'SET_COLLAGE_SETTINGS'; payload: Partial<CollageSettings> }
   | { type: 'SET_COLLAGE_RESULT'; payload: CollageLayoutResult | null }
-  | { type: 'SET_MTG_INPUT_MODE'; payload: MtgInputMode }
-  | { type: 'SET_MTG_INPUT'; payload: string }
+  | { type: 'SET_TCG_GAME'; payload: TcgGame }
+  | { type: 'SET_TCG_INPUT_MODE'; payload: TcgInputMode }
+  | { type: 'SET_TCG_INPUT'; payload: string }
   | { type: 'SET_STICKER_SETTINGS'; payload: Partial<StickerSettings> }
   | PoolAction
   | { type: 'RESET' }
 
 /** Modes whose state holds a list of pool images. */
-export type PoolKey = 'collageImages' | 'mtgCustomImages' | 'stickerImages'
+export type PoolKey = 'collageImages' | 'tcgCustomImages' | 'stickerImages'
 
 /**
- * Generic pool-mutation action. One action covers collage/mtg/sticker —
+ * Generic pool-mutation action. One action covers collage/tcg/sticker —
  * the `pool` discriminator selects which list to mutate.
  *
  * Collage has an extra invariant: any mutation clears the cached
@@ -220,7 +225,7 @@ export type PoolKey = 'collageImages' | 'mtgCustomImages' | 'stickerImages'
  */
 export type PoolAction =
   | { type: 'POOL_ADD'; pool: 'collageImages'; payload: CollagePoolImage[] }
-  | { type: 'POOL_ADD'; pool: 'mtgCustomImages'; payload: MtgCustomImage[] }
+  | { type: 'POOL_ADD'; pool: 'tcgCustomImages'; payload: TcgCustomImage[] }
   | { type: 'POOL_ADD'; pool: 'stickerImages'; payload: StickerImage[] }
   | { type: 'POOL_REMOVE'; pool: PoolKey; payload: string }
   | { type: 'POOL_CLEAR'; pool: PoolKey }

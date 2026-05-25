@@ -1,34 +1,45 @@
 import { describe, it, expect } from 'vitest'
 import {
   STICKER_OFFSET_SIZES,
-  MTG_PAGE_WIDTH_PX,
-  MTG_PAGE_HEIGHT_PX,
-  MTG_CARD_WIDTH_PX,
-  MTG_CARD_HEIGHT_PX,
-  MTG_CARDS_PER_ROW,
-  MTG_CARDS_PER_COL,
-  MTG_DPI,
+  TCG_PAGE_WIDTH_PX,
+  TCG_PAGE_HEIGHT_PX,
+  TCG_DPI,
   PAPER_SIZES,
   TILE_SIZES,
   VARIATION_PRESETS
 } from './constants'
+import { mtgSource } from './processing/tcg/sources/mtg'
+import { riftboundSource } from './processing/tcg/sources/riftbound'
 
-describe('MTG constants', () => {
+describe('TCG sheet constants', () => {
   it('300 DPI × 8.5"×11" = 2550×3300 page', () => {
-    expect(MTG_PAGE_WIDTH_PX).toBe(8.5 * MTG_DPI)
-    expect(MTG_PAGE_HEIGHT_PX).toBe(11 * MTG_DPI)
+    expect(TCG_PAGE_WIDTH_PX).toBe(8.5 * TCG_DPI)
+    expect(TCG_PAGE_HEIGHT_PX).toBe(11 * TCG_DPI)
+  })
+})
+
+describe('CardSource defaults', () => {
+  it('MTG source is 2.5"×3.5" cards in a 3×3 grid', () => {
+    expect(mtgSource.cardWidthInches).toBe(2.5)
+    expect(mtgSource.cardHeightInches).toBe(3.5)
+    expect(mtgSource.cardsPerRow).toBe(3)
+    expect(mtgSource.cardsPerCol).toBe(3)
   })
 
-  it('300 DPI × 2.5"×3.5" = 750×1050 card', () => {
-    expect(MTG_CARD_WIDTH_PX).toBe(2.5 * MTG_DPI)
-    expect(MTG_CARD_HEIGHT_PX).toBe(3.5 * MTG_DPI)
+  it('Riftbound source is 2.5"×3.5" cards in a 3×3 grid', () => {
+    expect(riftboundSource.cardWidthInches).toBe(2.5)
+    expect(riftboundSource.cardHeightInches).toBe(3.5)
+    expect(riftboundSource.cardsPerRow).toBe(3)
+    expect(riftboundSource.cardsPerCol).toBe(3)
   })
 
-  it('a 3×3 card grid centers on the page with positive margins', () => {
-    const gridWidth = MTG_CARD_WIDTH_PX * MTG_CARDS_PER_ROW
-    const gridHeight = MTG_CARD_HEIGHT_PX * MTG_CARDS_PER_COL
-    expect(MTG_PAGE_WIDTH_PX - gridWidth).toBeGreaterThanOrEqual(0)
-    expect(MTG_PAGE_HEIGHT_PX - gridHeight).toBeGreaterThanOrEqual(0)
+  it('the chosen grid fits inside the TCG sheet (positive margins)', () => {
+    for (const source of [mtgSource, riftboundSource]) {
+      const gridW = source.cardWidthInches * source.cardsPerRow * TCG_DPI
+      const gridH = source.cardHeightInches * source.cardsPerCol * TCG_DPI
+      expect(TCG_PAGE_WIDTH_PX - gridW, source.id).toBeGreaterThanOrEqual(0)
+      expect(TCG_PAGE_HEIGHT_PX - gridH, source.id).toBeGreaterThanOrEqual(0)
+    }
   })
 })
 

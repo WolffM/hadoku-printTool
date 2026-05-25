@@ -357,19 +357,17 @@ export const DEFAULT_COLLAGE_SETTINGS = {
 }
 
 // ============================================================================
-// MTG Proxy Constants
-// Ported from mtgProxies/main.py — fixed at 8.5"x11" / 300 DPI / 3x3 cards
+// TCG Proxy Constants
+// Sheet output is fixed at 8.5"x11" / 300 DPI. Per-game card dimensions and
+// grid layout come from the CardSource (see processing/tcg/sources/).
 // ============================================================================
 
-export const MTG_DPI = 300
-export const MTG_CARDS_PER_ROW = 3
-export const MTG_CARDS_PER_COL = 3
-/** 2.5" x 3.5" at 300 DPI */
-export const MTG_CARD_WIDTH_PX = 750
-export const MTG_CARD_HEIGHT_PX = 1050
-/** 8.5" x 11" at 300 DPI */
-export const MTG_PAGE_WIDTH_PX = 2550
-export const MTG_PAGE_HEIGHT_PX = 3300
+export const TCG_DPI = 300
+export const TCG_PAGE_WIDTH_INCHES = 8.5
+export const TCG_PAGE_HEIGHT_INCHES = 11
+/** 8.5" × 11" at 300 DPI */
+export const TCG_PAGE_WIDTH_PX = TCG_PAGE_WIDTH_INCHES * TCG_DPI
+export const TCG_PAGE_HEIGHT_PX = TCG_PAGE_HEIGHT_INCHES * TCG_DPI
 
 // ============================================================================
 // Sticker Constants

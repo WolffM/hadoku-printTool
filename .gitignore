@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
 
+# Local scratch / sample decks (not version-controlled)
+temp/
+
 # Python
 .venv/
 __pycache__/

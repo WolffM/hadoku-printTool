@@ -15,7 +15,8 @@ import { simpleMode } from './simpleMode'
 import { duplexMode } from './duplexMode'
 import { calibrationMode } from './calibrationMode'
 import { collageMode } from './collageMode'
-import { mtgMode } from './mtgMode'
+import { tcgMode } from './tcgMode'
+// (was `mtgMode`; renamed when the mode was generalised to support multiple TCGs)
 import { stickerMode } from './stickerMode'
 
 export const MODES: readonly ModeModule[] = [
@@ -23,7 +24,7 @@ export const MODES: readonly ModeModule[] = [
   duplexMode,
   calibrationMode,
   collageMode,
-  mtgMode,
+  tcgMode,
   stickerMode
 ] as const
 

@@ -202,8 +202,29 @@
   font-size: 1.25rem;
 }
 
-/* MTG Settings — tabs + textarea */
-.printtool-mtg-settings__tabs {
+/* TCG Settings — game dropdown, mode tabs, deck-list textarea, hint */
+.printtool-tcg-settings__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.printtool-tcg-settings__label {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text, #000000);
+}
+
+.printtool-tcg-settings__select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  background-color: var(--color-bg, #ffffff);
+  color: var(--color-text, #000000);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.printtool-tcg-settings__tabs {
   display: flex;
   gap: 0.25rem;
   padding: 0.25rem;
@@ -211,7 +232,7 @@
   border-radius: calc(var(--border-radius, 8px) - 2px);
 }
 
-.printtool-mtg-settings__tab {
+.printtool-tcg-settings__tab {
   flex: 1;
   padding: 0.5rem 0.75rem;
   border: none;
@@ -223,17 +244,17 @@
   transition: background-color 0.15s ease;
 }
 
-.printtool-mtg-settings__tab:hover {
+.printtool-tcg-settings__tab:hover {
   background-color: var(--color-bg-card, #ffffff);
 }
 
-.printtool-mtg-settings__tab--active {
+.printtool-tcg-settings__tab--active {
   background-color: var(--color-bg-card, #ffffff);
   color: var(--color-text, #000000);
   font-weight: var(--font-weight-semibold, 600);
 }
 
-.printtool-mtg-settings__textarea {
+.printtool-tcg-settings__textarea {
   width: 100%;
   min-height: 200px;
   padding: 0.5rem 0.75rem;
@@ -246,12 +267,12 @@
   resize: vertical;
 }
 
-.printtool-mtg-settings__textarea:focus {
+.printtool-tcg-settings__textarea:focus {
   outline: 2px solid var(--color-primary, #3b82f6);
   outline-offset: -2px;
 }
 
-.printtool-mtg-settings__hint {
+.printtool-tcg-settings__hint {
   font-size: var(--font-size-xs, 0.75rem);
   color: var(--color-text-secondary, #64748b);
 }

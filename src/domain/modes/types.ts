@@ -38,11 +38,12 @@ export interface ModeActions {
   removeCollageImage: (id: string) => void
   clearCollageImages: () => void
   setCollageSettings: (s: Partial<PrintToolState['collageSettings']>) => void
-  setMtgInputMode: (m: PrintToolState['mtgInputMode']) => void
-  setMtgInput: (input: string) => void
-  addMtgCustomImages: (images: PrintToolState['mtgCustomImages']) => void
-  removeMtgCustomImage: (id: string) => void
-  clearMtgCustomImages: () => void
+  setTcgGame: (game: PrintToolState['tcgGame']) => void
+  setTcgInputMode: (m: PrintToolState['tcgInputMode']) => void
+  setTcgInput: (input: string) => void
+  addTcgCustomImages: (images: PrintToolState['tcgCustomImages']) => void
+  removeTcgCustomImage: (id: string) => void
+  clearTcgCustomImages: () => void
   addStickerImages: (images: PrintToolState['stickerImages']) => void
   removeStickerImage: (id: string) => void
   clearStickerImages: () => void

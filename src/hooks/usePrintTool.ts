@@ -19,8 +19,9 @@ import type {
   CollagePoolImage,
   CollageSettings,
   CollageLayoutResult,
-  MtgInputMode,
-  MtgCustomImage,
+  TcgGame,
+  TcgInputMode,
+  TcgCustomImage,
   StickerImage,
   StickerSettings
 } from '../domain/types'
@@ -59,9 +60,10 @@ export const initialState: PrintToolState = {
   collageImages: [],
   collageSettings: DEFAULT_COLLAGE_SETTINGS,
   collageResult: null,
-  mtgInputMode: 'list',
-  mtgInput: '',
-  mtgCustomImages: [],
+  tcgGame: 'mtg',
+  tcgInputMode: 'list',
+  tcgInput: '',
+  tcgCustomImages: [],
   stickerImages: [],
   stickerSettings: DEFAULT_STICKER_SETTINGS,
   isProcessing: false,
@@ -232,18 +234,26 @@ export function reducer(state: PrintToolState, action: PrintToolAction): PrintTo
         collageResult: action.payload
       }
 
-    case 'SET_MTG_INPUT_MODE':
+    case 'SET_TCG_GAME':
       return {
         ...state,
-        mtgInputMode: action.payload,
+        tcgGame: action.payload,
         result: null,
         error: null
       }
 
-    case 'SET_MTG_INPUT':
+    case 'SET_TCG_INPUT_MODE':
       return {
         ...state,
-        mtgInput: action.payload,
+        tcgInputMode: action.payload,
+        result: null,
+        error: null
+      }
+
+    case 'SET_TCG_INPUT':
+      return {
+        ...state,
+        tcgInput: action.payload,
         result: null
       }
 
@@ -368,26 +378,31 @@ export function usePrintTool() {
     dispatch({ type: 'SET_COLLAGE_RESULT', payload: result })
   }, [])
 
-  // MTG action creators
-  const setMtgInputMode = useCallback((mode: MtgInputMode) => {
-    dispatch({ type: 'SET_MTG_INPUT_MODE', payload: mode })
+  // TCG action creators
+  const setTcgGame = useCallback((game: TcgGame) => {
+    dispatch({ type: 'SET_TCG_GAME', payload: game })
+    logger.info('[usePrintTool] TCG game changed', { game })
   }, [])
 
-  const setMtgInput = useCallback((input: string) => {
-    dispatch({ type: 'SET_MTG_INPUT', payload: input })
+  const setTcgInputMode = useCallback((mode: TcgInputMode) => {
+    dispatch({ type: 'SET_TCG_INPUT_MODE', payload: mode })
   }, [])
 
-  const addMtgCustomImages = useCallback((images: MtgCustomImage[]) => {
-    dispatch({ type: 'POOL_ADD', pool: 'mtgCustomImages', payload: images })
-    logger.info('[usePrintTool] Added MTG custom images', { count: images.length })
+  const setTcgInput = useCallback((input: string) => {
+    dispatch({ type: 'SET_TCG_INPUT', payload: input })
   }, [])
 
-  const removeMtgCustomImage = useCallback((id: string) => {
-    dispatch({ type: 'POOL_REMOVE', pool: 'mtgCustomImages', payload: id })
+  const addTcgCustomImages = useCallback((images: TcgCustomImage[]) => {
+    dispatch({ type: 'POOL_ADD', pool: 'tcgCustomImages', payload: images })
+    logger.info('[usePrintTool] Added TCG custom images', { count: images.length })
   }, [])
 
-  const clearMtgCustomImages = useCallback(() => {
-    dispatch({ type: 'POOL_CLEAR', pool: 'mtgCustomImages' })
+  const removeTcgCustomImage = useCallback((id: string) => {
+    dispatch({ type: 'POOL_REMOVE', pool: 'tcgCustomImages', payload: id })
+  }, [])
+
+  const clearTcgCustomImages = useCallback(() => {
+    dispatch({ type: 'POOL_CLEAR', pool: 'tcgCustomImages' })
   }, [])
 
   // Sticker action creators
@@ -431,12 +446,13 @@ export function usePrintTool() {
     clearCollageImages,
     setCollageSettings,
     setCollageResult,
-    // MTG actions
-    setMtgInputMode,
-    setMtgInput,
-    addMtgCustomImages,
-    removeMtgCustomImage,
-    clearMtgCustomImages,
+    // TCG actions
+    setTcgGame,
+    setTcgInputMode,
+    setTcgInput,
+    addTcgCustomImages,
+    removeTcgCustomImage,
+    clearTcgCustomImages,
     // Sticker actions
     addStickerImages,
     removeStickerImage,
