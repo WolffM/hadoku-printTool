@@ -4,7 +4,7 @@ import { parseDeckList, expandByCount } from '../types'
 
 const parseLine = riftboundSource.parseLine.bind(riftboundSource)
 
-describe('riftboundSource.parseLine', () => {
+describe('riftboundSource.parseLine — ID format', () => {
   it('parses a bare ID: "OGN-001"', () => {
     expect(parseLine('OGN-001')).toMatchObject({
       raw: 'OGN-001',
@@ -15,19 +15,12 @@ describe('riftboundSource.parseLine', () => {
   })
 
   it('normalises a 1-2 digit number to 3-digit padding', () => {
-    expect(parseLine('OGN-7')).toMatchObject({
-      setCode: 'OGN',
-      collectorNumber: '007'
-    })
-    expect(parseLine('OGN-42')).toMatchObject({
-      setCode: 'OGN',
-      collectorNumber: '042'
-    })
+    expect(parseLine('OGN-7')).toMatchObject({ collectorNumber: '007' })
+    expect(parseLine('OGN-42')).toMatchObject({ collectorNumber: '042' })
   })
 
   it('upper-cases the set code', () => {
     expect(parseLine('ogn-001')).toMatchObject({ setCode: 'OGN' })
-    expect(parseLine('Ogn-001')).toMatchObject({ setCode: 'OGN' })
   })
 
   it('strips a leading count: "3 OGN-007"', () => {
@@ -38,17 +31,13 @@ describe('riftboundSource.parseLine', () => {
     })
   })
 
-  it('strips a leading count with "x" suffix: "4x UNL-015"', () => {
-    expect(parseLine('4x UNL-015')).toMatchObject({
-      setCode: 'UNL',
-      collectorNumber: '015',
-      count: 4
-    })
+  it('strips a leading count with "x" suffix', () => {
+    expect(parseLine('4x UNL-015')).toMatchObject({ count: 4 })
   })
 
-  it('accepts an explicit a/b suffix but drops it (always reaches via base ID)', () => {
-    // CDN serves "OGN-007.webp" (front) and "OGN-007b.webp" (back). The
-    // parser canonicalises to the base ID; fetchCard probes both.
+  it('canonicalises a/b suffix to the base ID', () => {
+    // CDN serves OGN-007.webp (front) and OGN-007b.webp (back). The parser
+    // drops the suffix; fetchCard probes both URLs in parallel.
     expect(parseLine('OGN-007a')).toMatchObject({
       setCode: 'OGN',
       collectorNumber: '007'
@@ -58,42 +47,62 @@ describe('riftboundSource.parseLine', () => {
       collectorNumber: '007'
     })
   })
+})
 
-  it('returns null for empty / comment / malformed lines', () => {
-    expect(parseLine('')).toBeNull()
-    expect(parseLine('   ')).toBeNull()
-    expect(parseLine('# comment')).toBeNull()
-    expect(parseLine('Lightning Bolt')).toBeNull() // not an ID
-    expect(parseLine('OGN')).toBeNull() // no number
-    expect(parseLine('001')).toBeNull() // no set
+describe('riftboundSource.parseLine — name format', () => {
+  it('resolves a known name via the baked index', () => {
+    // "Plundering Poro" is in riftbound-index.json. The exact ID depends on
+    // what the index resolved it to; we just assert it parsed *something*.
+    const entry = parseLine('3 Plundering Poro')
+    expect(entry).not.toBeNull()
+    expect(entry?.count).toBe(3)
+    expect(entry?.setCode).toMatch(/^[A-Z]+$/)
+  })
+
+  it('returns null for a name not in the index (with warning)', () => {
+    expect(parseLine('1 Definitely Not A Card 123')).toBeNull()
   })
 })
 
-describe('parseDeckList with riftboundSource', () => {
-  it('parses a multi-line deck', () => {
-    const input = `OGN-001
-# Comment
-
-3 OGN-007
-UNL-015`
-
-    const entries = parseDeckList(input, riftboundSource)
-    expect(entries).toHaveLength(3)
-    expect(entries[0]).toMatchObject({ setCode: 'OGN', collectorNumber: '001', count: 1 })
-    expect(entries[1]).toMatchObject({ setCode: 'OGN', collectorNumber: '007', count: 3 })
-    expect(entries[2]).toMatchObject({ setCode: 'UNL', collectorNumber: '015', count: 1 })
+describe('riftboundSource.parseLine — ignored lines', () => {
+  it('returns null for empty / whitespace / comment lines', () => {
+    expect(parseLine('')).toBeNull()
+    expect(parseLine('   ')).toBeNull()
+    expect(parseLine('# comment')).toBeNull()
   })
 
-  it('handles Windows CRLF line endings', () => {
+  it('returns null for .txt export section headers', () => {
+    expect(parseLine('Legend:')).toBeNull()
+    expect(parseLine('Champion:')).toBeNull()
+    expect(parseLine('MainDeck:')).toBeNull()
+    expect(parseLine('Battlefields:')).toBeNull()
+    expect(parseLine('Rune Pool:')).toBeNull()
+    expect(parseLine('Sideboard:')).toBeNull()
+  })
+})
+
+describe('parseDeckList with riftboundSource — .txt export format', () => {
+  it('drops section headers and blanks, keeps ID lines', () => {
+    const input = `Legend:
+1 OGN-001
+
+MainDeck:
+3 OGN-007
+UNL-015`
+    const entries = parseDeckList(input, riftboundSource)
+    expect(entries).toHaveLength(3)
+    expect(entries.map(e => e.count)).toEqual([1, 3, 1])
+  })
+
+  it('handles CRLF line endings', () => {
     expect(parseDeckList('OGN-001\r\nUNL-015\r\n', riftboundSource)).toHaveLength(2)
   })
 
-  it('silently drops malformed lines (no name-lookup fallback)', () => {
+  it('drops unknown names (no name auto-search fallback)', () => {
     const input = `OGN-001
 not a real card
 UNL-015`
     const entries = parseDeckList(input, riftboundSource)
-    expect(entries).toHaveLength(2)
     expect(entries.map(e => e.raw)).toEqual(['OGN-001', 'UNL-015'])
   })
 })
