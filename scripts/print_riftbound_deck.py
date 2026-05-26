@@ -105,8 +105,7 @@ def load_card(cid: str) -> Image.Image | None:
 def load_cardback() -> Image.Image:
     if not CARDBACK_PATH.exists():
         raise FileNotFoundError(
-            f'Cardback not found at {CARDBACK_PATH}. Run `python scripts/make_cardback.py` '
-            'first, or drop a 750x1050 PNG at that path.'
+            f'Cardback not found at {CARDBACK_PATH}. Drop a card-proportioned PNG at that path.'
         )
     return Image.open(CARDBACK_PATH).convert('RGB')
 
