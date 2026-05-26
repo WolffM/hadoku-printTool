@@ -6,3 +6,9 @@ export type { TcgSheet, CreateTcgSheetsOptions } from './createTcgSheets'
 
 export { SOURCES, SOURCE_ORDER, getSource, mtgSource, riftboundSource } from './sources'
 export type { TcgGame } from './sources'
+
+export {
+  buildRiftboundDeck,
+  parseDeckForEditor,
+  prefetchVariantImages
+} from './sources/riftbound-deck'

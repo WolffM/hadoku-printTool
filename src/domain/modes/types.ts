@@ -44,6 +44,8 @@ export interface ModeActions {
   addTcgCustomImages: (images: PrintToolState['tcgCustomImages']) => void
   removeTcgCustomImage: (id: string) => void
   clearTcgCustomImages: () => void
+  setRiftboundDeck: (deck: PrintToolState['riftboundDeck']) => void
+  setRiftboundSlotVariant: (slotIndex: number, variantId: string) => void
   addStickerImages: (images: PrintToolState['stickerImages']) => void
   removeStickerImage: (id: string) => void
   clearStickerImages: () => void

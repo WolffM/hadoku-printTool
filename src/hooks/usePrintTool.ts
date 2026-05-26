@@ -22,6 +22,7 @@ import type {
   TcgGame,
   TcgInputMode,
   TcgCustomImage,
+  RiftboundDeck,
   StickerImage,
   StickerSettings
 } from '../domain/types'
@@ -64,6 +65,7 @@ export const initialState: PrintToolState = {
   tcgInputMode: 'list',
   tcgInput: '',
   tcgCustomImages: [],
+  riftboundDeck: null,
   stickerImages: [],
   stickerSettings: DEFAULT_STICKER_SETTINGS,
   isProcessing: false,
@@ -257,6 +259,28 @@ export function reducer(state: PrintToolState, action: PrintToolAction): PrintTo
         result: null
       }
 
+    case 'SET_RIFTBOUND_DECK':
+      return {
+        ...state,
+        riftboundDeck: action.payload,
+        // Clear any prior result so the editor view isn't competing with stale sheets.
+        result: action.payload ? null : state.result,
+        error: null
+      }
+
+    case 'SET_RIFTBOUND_SLOT_VARIANT': {
+      if (!state.riftboundDeck) return state
+      const { slotIndex, variantId } = action.payload
+      const nextSlots = state.riftboundDeck.slots.slice()
+      const slot = nextSlots[slotIndex]
+      if (!slot || !slot.variants.includes(variantId)) return state
+      nextSlots[slotIndex] = { ...slot, selectedId: variantId }
+      return {
+        ...state,
+        riftboundDeck: { ...state.riftboundDeck, slots: nextSlots }
+      }
+    }
+
     case 'SET_STICKER_SETTINGS':
       return {
         ...state,
@@ -405,6 +429,14 @@ export function usePrintTool() {
     dispatch({ type: 'POOL_CLEAR', pool: 'tcgCustomImages' })
   }, [])
 
+  const setRiftboundDeck = useCallback((deck: RiftboundDeck | null) => {
+    dispatch({ type: 'SET_RIFTBOUND_DECK', payload: deck })
+  }, [])
+
+  const setRiftboundSlotVariant = useCallback((slotIndex: number, variantId: string) => {
+    dispatch({ type: 'SET_RIFTBOUND_SLOT_VARIANT', payload: { slotIndex, variantId } })
+  }, [])
+
   // Sticker action creators
   const addStickerImages = useCallback((images: StickerImage[]) => {
     dispatch({ type: 'POOL_ADD', pool: 'stickerImages', payload: images })
@@ -453,6 +485,8 @@ export function usePrintTool() {
     addTcgCustomImages,
     removeTcgCustomImage,
     clearTcgCustomImages,
+    setRiftboundDeck,
+    setRiftboundSlotVariant,
     // Sticker actions
     addStickerImages,
     removeStickerImage,

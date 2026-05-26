@@ -43,6 +43,7 @@ export const tcgMode: ModeModule = {
       onAddCustomImages={actions.addTcgCustomImages}
       onRemoveCustomImage={actions.removeTcgCustomImage}
       onClearCustomImages={actions.clearTcgCustomImages}
+      onBuildRiftboundDeck={actions.setRiftboundDeck}
     />
   ),
 

@@ -6,10 +6,12 @@
  * math) read from the active source. A Game dropdown switches sources.
  */
 
-import type { TcgGame, TcgInputMode, TcgCustomImage } from '../../domain/types'
+import { useState } from 'react'
+import { logger } from '@wolffm/task-ui-components'
+import type { TcgGame, TcgInputMode, TcgCustomImage, RiftboundDeck } from '../../domain/types'
 import { ImagePool } from '../shared/ImagePool'
 import { SettingsPanel, SettingsSection, SettingsInfo } from '../shared/SettingsPanel'
-import { SOURCES, SOURCE_ORDER, getSource } from '../../domain/processing/tcg'
+import { SOURCES, SOURCE_ORDER, getSource, buildRiftboundDeck } from '../../domain/processing/tcg'
 
 interface TcgSettingsProps {
   tcgGame: TcgGame
@@ -22,6 +24,8 @@ interface TcgSettingsProps {
   onAddCustomImages: (images: TcgCustomImage[]) => void
   onRemoveCustomImage: (id: string) => void
   onClearCustomImages: () => void
+  /** Optional — only wired when the active source supports a per-slot editor. */
+  onBuildRiftboundDeck?: (deck: RiftboundDeck) => void
 }
 
 export function TcgSettings({
@@ -34,10 +38,52 @@ export function TcgSettings({
   onInputChange,
   onAddCustomImages,
   onRemoveCustomImage,
-  onClearCustomImages
+  onClearCustomImages,
+  onBuildRiftboundDeck
 }: TcgSettingsProps) {
   const source = getSource(tcgGame)
   const cardsPerSheet = source.cardsPerRow * source.cardsPerCol
+
+  const [editorBuilding, setEditorBuilding] = useState(false)
+  const [editorProgress, setEditorProgress] = useState<{ done: number; total: number } | null>(null)
+  const [editorMessage, setEditorMessage] = useState<string | null>(null)
+
+  const showEditorButton =
+    tcgGame === 'riftbound' &&
+    tcgInputMode === 'list' &&
+    tcgInput.trim().length > 0 &&
+    !!onBuildRiftboundDeck
+
+  const handleBuildEditor = async () => {
+    if (!onBuildRiftboundDeck) return
+    setEditorMessage(null)
+    setEditorBuilding(true)
+    setEditorProgress({ done: 0, total: 0 })
+    try {
+      const { deck, missing } = await buildRiftboundDeck(tcgInput, (done, total) => {
+        setEditorProgress({ done, total })
+      })
+      if (deck.slots.length === 0) {
+        setEditorMessage('No cards resolved from the deck list.')
+        logger.warn('[TcgSettings] Empty deck after build', { missing })
+        return
+      }
+      if (missing.length > 0) {
+        setEditorMessage(
+          `${missing.length} line${missing.length === 1 ? '' : 's'} not found in the card index — skipped.`
+        )
+        logger.warn('[TcgSettings] Some lines missing from index', { missing })
+      }
+      onBuildRiftboundDeck(deck)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Build failed'
+      setEditorMessage(message)
+      logger.error('[TcgSettings] Deck build failed', { error: message })
+    } finally {
+      setEditorBuilding(false)
+      setEditorProgress(null)
+    }
+  }
 
   const cardCount = tcgInput
     .split(/\r?\n/)
@@ -110,6 +156,31 @@ export function TcgSettings({
               {cardCount} card{cardCount === 1 ? '' : 's'} · {sheetCountListMode} sheet
               {sheetCountListMode === 1 ? '' : 's'}
             </div>
+
+            {showEditorButton && (
+              <div className="printtool-tcg-settings__editor-launch">
+                <button
+                  type="button"
+                  className="printtool-riftbound-editor__button printtool-riftbound-editor__button--primary"
+                  onClick={() => {
+                    void handleBuildEditor()
+                  }}
+                  disabled={editorBuilding}
+                >
+                  {editorBuilding
+                    ? editorProgress && editorProgress.total > 0
+                      ? `Loading art ${editorProgress.done}/${editorProgress.total}…`
+                      : 'Parsing deck…'
+                    : 'Open Deck Editor'}
+                </button>
+                {editorMessage && (
+                  <p className="printtool-tcg-settings__editor-message">{editorMessage}</p>
+                )}
+                <p className="printtool-tcg-settings__editor-hint">
+                  Pre-fetches every alt-art variant so you can pick per-card art before saving.
+                </p>
+              </div>
+            )}
           </>
         ) : (
           <>

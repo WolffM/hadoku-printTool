@@ -218,6 +218,68 @@ describe('reducer — POOL_* generic actions (mtg + sticker)', () => {
     expect(after.error).toBeNull()
   })
 
+  it('SET_RIFTBOUND_DECK installs a deck and clears prior result', () => {
+    const dirty = {
+      ...initialState,
+      result: { frontCanvas: document.createElement('canvas'), layoutInfo: null, filename: 'x' }
+    }
+    const deck = {
+      slots: [{ raw: '1 Foo', name: 'Foo', variants: ['X-001'], selectedId: 'X-001' }],
+      variantImages: {}
+    }
+    const next = reducer(dirty, { type: 'SET_RIFTBOUND_DECK', payload: deck })
+    expect(next.riftboundDeck).toBe(deck)
+    expect(next.result).toBeNull()
+  })
+
+  it('SET_RIFTBOUND_DECK null preserves prior result (just closes editor)', () => {
+    const result = {
+      frontCanvas: document.createElement('canvas'),
+      layoutInfo: null,
+      filename: 'x'
+    }
+    const dirty = { ...initialState, result, riftboundDeck: { slots: [], variantImages: {} } }
+    const next = reducer(dirty, { type: 'SET_RIFTBOUND_DECK', payload: null })
+    expect(next.riftboundDeck).toBeNull()
+    expect(next.result).toBe(result)
+  })
+
+  it('SET_RIFTBOUND_SLOT_VARIANT swaps the selected ID for the given slot only', () => {
+    const deck = {
+      slots: [
+        { raw: '1 A', name: 'A', variants: ['X-001', 'X-001a'], selectedId: 'X-001' },
+        { raw: '1 B', name: 'B', variants: ['Y-001'], selectedId: 'Y-001' }
+      ],
+      variantImages: {}
+    }
+    const next = reducer(
+      { ...initialState, riftboundDeck: deck },
+      { type: 'SET_RIFTBOUND_SLOT_VARIANT', payload: { slotIndex: 0, variantId: 'X-001a' } }
+    )
+    expect(next.riftboundDeck?.slots[0].selectedId).toBe('X-001a')
+    expect(next.riftboundDeck?.slots[1].selectedId).toBe('Y-001')
+  })
+
+  it('SET_RIFTBOUND_SLOT_VARIANT ignores unknown variant IDs', () => {
+    const deck = {
+      slots: [{ raw: '1 A', name: 'A', variants: ['X-001'], selectedId: 'X-001' }],
+      variantImages: {}
+    }
+    const next = reducer(
+      { ...initialState, riftboundDeck: deck },
+      { type: 'SET_RIFTBOUND_SLOT_VARIANT', payload: { slotIndex: 0, variantId: 'Q-999' } }
+    )
+    expect(next.riftboundDeck?.slots[0].selectedId).toBe('X-001')
+  })
+
+  it('SET_RIFTBOUND_SLOT_VARIANT is a no-op when no deck is active', () => {
+    const next = reducer(initialState, {
+      type: 'SET_RIFTBOUND_SLOT_VARIANT',
+      payload: { slotIndex: 0, variantId: 'X-001' }
+    })
+    expect(next).toBe(initialState)
+  })
+
   it('SET_STICKER_SETTINGS merges partials onto the existing settings', () => {
     const after = reducer(initialState, {
       type: 'SET_STICKER_SETTINGS',

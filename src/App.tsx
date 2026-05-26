@@ -9,6 +9,7 @@ import type { PrintToolProps } from './entry'
 import { ModeSelector } from './components/ModeSelector/ModeSelector'
 import { ResultPreview } from './components/Preview/ResultPreview'
 import { ActionButtons } from './components/Actions/ActionButtons'
+import { RiftboundDeckEditor } from './components/RiftboundDeckEditor/RiftboundDeckEditor'
 import { ApiStatus, type ApiStatusState } from './components/ApiStatus/ApiStatus'
 import { ProcessingOverlay, type ProcessingProgress } from './components/Progress/ProcessingOverlay'
 
@@ -72,6 +73,8 @@ export default function App(props: PrintToolProps = {}) {
     addTcgCustomImages: tool.addTcgCustomImages,
     removeTcgCustomImage: tool.removeTcgCustomImage,
     clearTcgCustomImages: tool.clearTcgCustomImages,
+    setRiftboundDeck: tool.setRiftboundDeck,
+    setRiftboundSlotVariant: tool.setRiftboundSlotVariant,
     addStickerImages: tool.addStickerImages,
     removeStickerImage: tool.removeStickerImage,
     clearStickerImages: tool.clearStickerImages,
@@ -150,19 +153,29 @@ export default function App(props: PrintToolProps = {}) {
             <div className="printtool__sidebar">{module_.renderSettings({ state, actions })}</div>
 
             <div className="printtool__main">
-              <ResultPreview result={state.result} mode={state.mode} />
+              {state.riftboundDeck ? (
+                <RiftboundDeckEditor
+                  deck={state.riftboundDeck}
+                  onSlotVariantChange={tool.setRiftboundSlotVariant}
+                  onClose={() => tool.setRiftboundDeck(null)}
+                />
+              ) : (
+                <>
+                  <ResultPreview result={state.result} mode={state.mode} />
 
-              {state.error && <div className="printtool__error">{state.error}</div>}
+                  {state.error && <div className="printtool__error">{state.error}</div>}
 
-              <ActionButtons
-                mode={state.mode}
-                canProcess={canProcess}
-                isProcessing={state.isProcessing}
-                result={state.result}
-                dpi={state.mode === 'calibration' ? state.calibrationDpi : state.dpi}
-                onProcess={handleProcess}
-                onError={setError}
-              />
+                  <ActionButtons
+                    mode={state.mode}
+                    canProcess={canProcess}
+                    isProcessing={state.isProcessing}
+                    result={state.result}
+                    dpi={state.mode === 'calibration' ? state.calibrationDpi : state.dpi}
+                    onProcess={handleProcess}
+                    onError={setError}
+                  />
+                </>
+              )}
             </div>
           </div>
         </main>

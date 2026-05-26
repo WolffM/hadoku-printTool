@@ -277,6 +277,30 @@
   color: var(--color-text-secondary, #64748b);
 }
 
+.printtool-tcg-settings__editor-launch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--color-border, #e5e7eb);
+}
+
+.printtool-tcg-settings__editor-hint {
+  margin: 0;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-tcg-settings__editor-message {
+  margin: 0;
+  padding: 0.4rem 0.6rem;
+  background-color: var(--color-bg-alt, #f3f4f6);
+  border-radius: 4px;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text, #000000);
+}
+
 /* Sticker Settings — copies/offset/radio/checkbox controls */
 .printtool-sticker-settings__group {
   display: flex;

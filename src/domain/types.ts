@@ -79,6 +79,32 @@ export type TcgGame = 'mtg' | 'riftbound'
  */
 export type TcgCustomImage = PooledImage
 
+// ----------------------------------------------------------------------------
+// Riftbound deck editor (Riftbound-only sub-flow of TCG mode)
+//
+// User pastes a decklist, hits "Build Deck Editor", and gets a 3x3 preview
+// grid where every card slot has a dropdown to pick the alt-art variant.
+// All variant images are pre-fetched on build so the dropdowns are instant.
+// ----------------------------------------------------------------------------
+
+/** One card position in the deck order — the unit that becomes a grid slot. */
+export interface RiftboundDeckSlot {
+  /** Original decklist line (e.g. "3 Plundering Poro") — shown for context. */
+  raw: string
+  /** Card display name (e.g. "Plundering Poro"); empty for ID-only entries. */
+  name: string
+  /** All known printing IDs for this name, lowest-numbered first (black-bordered). */
+  variants: string[]
+  /** Currently chosen variant ID — initial = variants[0]. */
+  selectedId: string
+}
+
+export interface RiftboundDeck {
+  slots: RiftboundDeckSlot[]
+  /** Variant ID → data URL. Populated by the pre-fetch step. */
+  variantImages: Record<string, string>
+}
+
 // ============================================================================
 // Sticker Mode Types
 // Mirrors the Python StickerMaker --copies / --size / --offset flags.
@@ -169,6 +195,8 @@ export interface PrintToolState {
   tcgInputMode: TcgInputMode
   tcgInput: string
   tcgCustomImages: TcgCustomImage[]
+  /** Active Riftbound deck-editor session, or null when not in editor view. */
+  riftboundDeck: RiftboundDeck | null
 
   // Sticker Settings
   stickerImages: StickerImage[]
@@ -208,6 +236,8 @@ export type PrintToolAction =
   | { type: 'SET_TCG_GAME'; payload: TcgGame }
   | { type: 'SET_TCG_INPUT_MODE'; payload: TcgInputMode }
   | { type: 'SET_TCG_INPUT'; payload: string }
+  | { type: 'SET_RIFTBOUND_DECK'; payload: RiftboundDeck | null }
+  | { type: 'SET_RIFTBOUND_SLOT_VARIANT'; payload: { slotIndex: number; variantId: string } }
   | { type: 'SET_STICKER_SETTINGS'; payload: Partial<StickerSettings> }
   | PoolAction
   | { type: 'RESET' }

@@ -1,0 +1,170 @@
+/**
+ * Riftbound Deck Editor — per-slot art-picker grid that replaces the
+ * ResultPreview while a deck-editor session is active. Mirrors the
+ * print sheet's 3×3 layout so users see what each page will look like
+ * before saving.
+ */
+
+.printtool-riftbound-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--border-radius, 8px);
+}
+
+.printtool-riftbound-editor--empty {
+  align-items: center;
+  text-align: center;
+}
+
+.printtool-riftbound-editor__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.printtool-riftbound-editor__title {
+  margin: 0;
+  font-size: var(--font-size-base, 1rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text, #000000);
+}
+
+.printtool-riftbound-editor__subtitle {
+  margin: 0.25rem 0 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-riftbound-editor__header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.printtool-riftbound-editor__error {
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-bg-error, #fef2f2);
+  color: var(--color-text-error, #b91c1c);
+  border: 1px solid var(--color-border-error, #fecaca);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.printtool-riftbound-editor__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.printtool-riftbound-editor__slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  background-color: var(--color-bg-alt, #f9fafb);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+}
+
+.printtool-riftbound-editor__select {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  font-size: var(--font-size-xs, 0.75rem);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 4px;
+  background-color: var(--color-bg-card, #ffffff);
+  color: var(--color-text, #000000);
+}
+
+.printtool-riftbound-editor__select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.printtool-riftbound-editor__thumb {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 5 / 7;
+  background-color: var(--color-bg-card, #ffffff);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.printtool-riftbound-editor__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.printtool-riftbound-editor__thumb-missing {
+  padding: 0.5rem;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #64748b);
+  text-align: center;
+}
+
+.printtool-riftbound-editor__caption {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #64748b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.printtool-riftbound-editor__pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.printtool-riftbound-editor__pager-label {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.printtool-riftbound-editor__button {
+  padding: 0.5rem 0.85rem;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  background-color: var(--color-bg-card, #ffffff);
+  color: var(--color-text, #000000);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: calc(var(--border-radius, 8px) - 2px);
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease;
+}
+
+.printtool-riftbound-editor__button:hover:not(:disabled) {
+  background-color: var(--color-bg-alt, #f3f4f6);
+}
+
+.printtool-riftbound-editor__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.printtool-riftbound-editor__button--primary {
+  background-color: var(--color-accent, #2563eb);
+  color: var(--color-text-on-accent, #ffffff);
+  border-color: var(--color-accent, #2563eb);
+}
+
+.printtool-riftbound-editor__button--primary:hover:not(:disabled) {
+  background-color: var(--color-accent-hover, #1d4ed8);
+  border-color: var(--color-accent-hover, #1d4ed8);
+}
+
+.printtool-riftbound-editor__button--ghost {
+  background-color: transparent;
+}
