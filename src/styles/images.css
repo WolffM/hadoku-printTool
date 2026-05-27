@@ -233,7 +233,7 @@
 
 .printtool-image-upload__label {
   font-size: var(--font-size-sm, 0.875rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text);
 }
 
@@ -313,7 +313,7 @@
 
 .printtool-image-preview__label {
   font-size: var(--font-size-xs, 0.75rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
 }
 

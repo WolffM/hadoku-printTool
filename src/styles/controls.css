@@ -20,7 +20,7 @@
   background-color: transparent;
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm, 0.875rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -57,7 +57,7 @@
   border: none;
   border-radius: var(--border-radius, 8px);
   font-size: var(--font-size-sm, 0.875rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
   display: inline-flex;
@@ -107,7 +107,7 @@
 .printtool-actions__download-label {
   font-size: var(--font-size-xs, 0.75rem);
   color: var(--color-text-secondary);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-semibold);
 }
 
 .printtool-actions__download-buttons {
@@ -132,7 +132,7 @@
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: var(--font-size-xs, 0.75rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-semibold);
   background-color: var(--color-bg-alt);
   transition: all 0.2s ease;
 }

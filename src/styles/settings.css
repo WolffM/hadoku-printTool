@@ -70,7 +70,7 @@
 
 .printtool-settings__label {
   font-size: var(--font-size-sm, 0.875rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text);
 }
 
@@ -167,7 +167,7 @@
 
 .printtool-settings__layout-label {
   font-size: var(--font-size-xs, 0.75rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -213,7 +213,7 @@
 
 .printtool-tcg-settings__label {
   font-size: var(--font-size-sm, 0.875rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text);
 }
 
@@ -263,7 +263,7 @@
   width: 100%;
   min-height: 200px;
   padding: 0.5rem 0.75rem;
-  font-family: var(--font-family-mono, ui-monospace, 'Cascadia Code', Menlo, monospace);
+  font-family: ui-monospace, 'Cascadia Code', Menlo, monospace;
   font-size: var(--font-size-sm, 0.875rem);
   border: 1px solid var(--color-border);
   border-radius: calc(var(--border-radius, 8px) - 2px);
@@ -315,7 +315,7 @@
 
 .printtool-sticker-settings__label {
   font-size: var(--font-size-sm, 0.875rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text);
 }
 
@@ -363,7 +363,7 @@
 
 .printtool-calibration-settings__label {
   font-size: var(--font-size-sm, 0.875rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text);
 }
 
