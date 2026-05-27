@@ -65,6 +65,7 @@ export const initialState: PrintToolState = {
   tcgInputMode: 'list',
   tcgInput: '',
   tcgCustomImages: [],
+  tcgCutlines: true,
   riftboundDeck: null,
   stickerImages: [],
   stickerSettings: DEFAULT_STICKER_SETTINGS,
@@ -259,6 +260,13 @@ export function reducer(state: PrintToolState, action: PrintToolAction): PrintTo
         result: null
       }
 
+    case 'SET_TCG_CUTLINES':
+      return {
+        ...state,
+        tcgCutlines: action.payload,
+        result: null
+      }
+
     case 'SET_RIFTBOUND_DECK':
       return {
         ...state,
@@ -416,6 +424,10 @@ export function usePrintTool() {
     dispatch({ type: 'SET_TCG_INPUT', payload: input })
   }, [])
 
+  const setTcgCutlines = useCallback((on: boolean) => {
+    dispatch({ type: 'SET_TCG_CUTLINES', payload: on })
+  }, [])
+
   const addTcgCustomImages = useCallback((images: TcgCustomImage[]) => {
     dispatch({ type: 'POOL_ADD', pool: 'tcgCustomImages', payload: images })
     logger.info('[usePrintTool] Added TCG custom images', { count: images.length })
@@ -482,6 +494,7 @@ export function usePrintTool() {
     setTcgGame,
     setTcgInputMode,
     setTcgInput,
+    setTcgCutlines,
     addTcgCustomImages,
     removeTcgCustomImage,
     clearTcgCustomImages,

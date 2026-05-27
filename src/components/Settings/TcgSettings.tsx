@@ -18,9 +18,11 @@ interface TcgSettingsProps {
   tcgInputMode: TcgInputMode
   tcgInput: string
   tcgCustomImages: TcgCustomImage[]
+  tcgCutlines: boolean
   onGameChange: (game: TcgGame) => void
   onInputModeChange: (mode: TcgInputMode) => void
   onInputChange: (input: string) => void
+  onCutlinesChange: (on: boolean) => void
   onAddCustomImages: (images: TcgCustomImage[]) => void
   onRemoveCustomImage: (id: string) => void
   onClearCustomImages: () => void
@@ -33,9 +35,11 @@ export function TcgSettings({
   tcgInputMode,
   tcgInput,
   tcgCustomImages,
+  tcgCutlines,
   onGameChange,
   onInputModeChange,
   onInputChange,
+  onCutlinesChange,
   onAddCustomImages,
   onRemoveCustomImage,
   onClearCustomImages,
@@ -198,6 +202,15 @@ export function TcgSettings({
             )}
           </>
         )}
+
+        <label className="printtool-settings__checkbox">
+          <input
+            type="checkbox"
+            checked={tcgCutlines}
+            onChange={e => onCutlinesChange(e.target.checked)}
+          />
+          <span>Add cut lines (crop marks)</span>
+        </label>
 
         <SettingsInfo>
           <p>

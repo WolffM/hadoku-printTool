@@ -11,8 +11,8 @@
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
-  background-color: var(--color-bg-card, #ffffff);
-  border: 1px solid var(--color-border, #e5e7eb);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: var(--border-radius, 8px);
 }
 
@@ -26,29 +26,29 @@
   margin: 0;
   font-size: var(--font-size-sm, 0.875rem);
   font-weight: var(--font-weight-semibold, 600);
-  color: var(--color-text, #000000);
+  color: var(--color-text);
 }
 
 .printtool-settings-panel__description {
   margin: 0;
   font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
 }
 
 .printtool-settings-panel__description code,
 .printtool-settings-panel__info code {
   padding: 0 0.25rem;
   font-size: 0.85em;
-  background-color: var(--color-bg-alt, #f3f4f6);
+  background-color: var(--color-bg-alt);
   border-radius: 3px;
 }
 
 .printtool-settings-panel__info {
   padding: 0.5rem 0.75rem;
-  background-color: var(--color-bg-alt, #f9fafb);
+  background-color: var(--color-bg-alt);
   border-radius: calc(var(--border-radius, 8px) - 2px);
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
 }
 
 .printtool-settings-panel__info p {
@@ -65,22 +65,24 @@
 .printtool-settings__group--nested {
   margin-left: 1.5rem;
   padding-left: 1rem;
-  border-left: 2px solid var(--color-border, #e5e7eb);
+  border-left: 2px solid var(--color-border);
 }
 
 .printtool-settings__label {
   font-size: var(--font-size-sm, 0.875rem);
   font-weight: var(--font-weight-medium, 500);
-  color: var(--color-text, #000000);
+  color: var(--color-text);
 }
 
 .printtool-settings__select,
 .printtool-settings__input {
+  box-sizing: border-box;
+  width: 100%;
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border, #e5e7eb);
+  border: 1px solid var(--color-border);
   border-radius: calc(var(--border-radius, 8px) - 2px);
-  background-color: var(--color-bg, #ffffff);
-  color: var(--color-text, #000000);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   font-size: var(--font-size-sm, 0.875rem);
   transition: border-color 0.2s ease;
 }
@@ -88,7 +90,7 @@
 .printtool-settings__select:focus,
 .printtool-settings__input:focus {
   outline: none;
-  border-color: var(--color-primary, #0066cc);
+  border-color: var(--color-primary);
 }
 
 .printtool-settings__select:disabled,
@@ -100,7 +102,7 @@
 .printtool-settings__hint {
   margin: 0.25rem 0 0 0;
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
   font-style: italic;
   line-height: 1.4;
 }
@@ -110,7 +112,7 @@
   height: 6px;
   -webkit-appearance: none;
   appearance: none;
-  background-color: var(--color-bg-alt, #e5e7eb);
+  background-color: var(--color-bg-alt);
   border-radius: 3px;
   outline: none;
 }
@@ -120,7 +122,7 @@
   appearance: none;
   width: 16px;
   height: 16px;
-  background-color: var(--color-primary, #0066cc);
+  background-color: var(--color-primary);
   border-radius: 50%;
   cursor: pointer;
 }
@@ -128,7 +130,7 @@
 .printtool-settings__slider::-moz-range-thumb {
   width: 16px;
   height: 16px;
-  background-color: var(--color-primary, #0066cc);
+  background-color: var(--color-primary);
   border-radius: 50%;
   border: none;
   cursor: pointer;
@@ -138,7 +140,7 @@
   display: flex;
   justify-content: space-between;
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
 }
 
 .printtool-settings__checkbox {
@@ -147,26 +149,26 @@
   gap: 0.5rem;
   cursor: pointer;
   font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-text, #000000);
+  color: var(--color-text);
 }
 
 .printtool-settings__checkbox input[type='checkbox'] {
   width: 16px;
   height: 16px;
-  accent-color: var(--color-primary, #0066cc);
+  accent-color: var(--color-primary);
   cursor: pointer;
 }
 
 .printtool-settings__layout-info {
   padding: 0.75rem;
-  background-color: var(--color-primary-bg, #eff6ff);
+  background-color: var(--color-primary-bg);
   border-radius: calc(var(--border-radius, 8px) - 2px);
 }
 
 .printtool-settings__layout-label {
   font-size: var(--font-size-xs, 0.75rem);
   font-weight: var(--font-weight-medium, 500);
-  color: var(--color-primary, #0066cc);
+  color: var(--color-primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -174,16 +176,16 @@
 .printtool-settings__layout-value {
   font-size: var(--font-size-sm, 0.875rem);
   font-weight: var(--font-weight-semibold, 600);
-  color: var(--color-text, #000000);
+  color: var(--color-text);
   margin-top: 0.25rem;
 }
 
 .printtool-settings__layout-error {
   padding: 0.75rem;
-  background-color: var(--color-danger-light, #fef2f2);
+  background-color: var(--color-danger-light);
   border-radius: calc(var(--border-radius, 8px) - 2px);
   font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-danger, #ef4444);
+  color: var(--color-danger);
 }
 
 /* Duplex Settings — only the orientation-mismatch warning is mode-specific */
@@ -192,10 +194,10 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background-color: var(--color-warning-bg, #fffbeb);
+  background-color: var(--color-warning-bg);
   border-radius: calc(var(--border-radius, 8px) - 2px);
   font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-warning, #f59e0b);
+  color: var(--color-warning);
 }
 
 .printtool-duplex-settings__warning-icon {
@@ -212,15 +214,17 @@
 .printtool-tcg-settings__label {
   font-size: var(--font-size-sm, 0.875rem);
   font-weight: var(--font-weight-medium, 500);
-  color: var(--color-text, #000000);
+  color: var(--color-text);
 }
 
 .printtool-tcg-settings__select {
+  box-sizing: border-box;
+  width: 100%;
   padding: 0.4rem 0.6rem;
-  border: 1px solid var(--color-border, #e5e7eb);
+  border: 1px solid var(--color-border);
   border-radius: calc(var(--border-radius, 8px) - 2px);
-  background-color: var(--color-bg, #ffffff);
-  color: var(--color-text, #000000);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   font-size: var(--font-size-sm, 0.875rem);
 }
 
@@ -228,7 +232,7 @@
   display: flex;
   gap: 0.25rem;
   padding: 0.25rem;
-  background-color: var(--color-bg-alt, #f3f4f6);
+  background-color: var(--color-bg-alt);
   border-radius: calc(var(--border-radius, 8px) - 2px);
 }
 
@@ -239,42 +243,43 @@
   background: transparent;
   border-radius: calc(var(--border-radius, 8px) - 4px);
   font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
 
 .printtool-tcg-settings__tab:hover {
-  background-color: var(--color-bg-card, #ffffff);
+  background-color: var(--color-bg-card);
 }
 
 .printtool-tcg-settings__tab--active {
-  background-color: var(--color-bg-card, #ffffff);
-  color: var(--color-text, #000000);
+  background-color: var(--color-bg-card);
+  color: var(--color-text);
   font-weight: var(--font-weight-semibold, 600);
 }
 
 .printtool-tcg-settings__textarea {
+  box-sizing: border-box;
   width: 100%;
   min-height: 200px;
   padding: 0.5rem 0.75rem;
   font-family: var(--font-family-mono, ui-monospace, 'Cascadia Code', Menlo, monospace);
   font-size: var(--font-size-sm, 0.875rem);
-  border: 1px solid var(--color-border, #e5e7eb);
+  border: 1px solid var(--color-border);
   border-radius: calc(var(--border-radius, 8px) - 2px);
-  background-color: var(--color-bg-input, #ffffff);
-  color: var(--color-text, #000000);
+  background-color: var(--color-bg-card);
+  color: var(--color-text);
   resize: vertical;
 }
 
 .printtool-tcg-settings__textarea:focus {
-  outline: 2px solid var(--color-primary, #3b82f6);
+  outline: 2px solid var(--color-primary);
   outline-offset: -2px;
 }
 
 .printtool-tcg-settings__hint {
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
 }
 
 .printtool-tcg-settings__editor-launch {
@@ -283,22 +288,22 @@
   gap: 0.35rem;
   margin-top: 0.5rem;
   padding-top: 0.75rem;
-  border-top: 1px dashed var(--color-border, #e5e7eb);
+  border-top: 1px dashed var(--color-border);
 }
 
 .printtool-tcg-settings__editor-hint {
   margin: 0;
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
 }
 
 .printtool-tcg-settings__editor-message {
   margin: 0;
   padding: 0.4rem 0.6rem;
-  background-color: var(--color-bg-alt, #f3f4f6);
+  background-color: var(--color-bg-alt);
   border-radius: 4px;
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text, #000000);
+  color: var(--color-text);
 }
 
 /* Sticker Settings — copies/offset/radio/checkbox controls */
@@ -311,15 +316,17 @@
 .printtool-sticker-settings__label {
   font-size: var(--font-size-sm, 0.875rem);
   font-weight: var(--font-weight-medium, 500);
-  color: var(--color-text, #000000);
+  color: var(--color-text);
 }
 
 .printtool-sticker-settings__input {
+  box-sizing: border-box;
+  width: 100%;
   padding: 0.4rem 0.6rem;
-  border: 1px solid var(--color-border, #e5e7eb);
+  border: 1px solid var(--color-border);
   border-radius: calc(var(--border-radius, 8px) - 2px);
-  background-color: var(--color-bg-input, #ffffff);
-  color: var(--color-text, #000000);
+  background-color: var(--color-bg-card);
+  color: var(--color-text);
   font-size: var(--font-size-sm, 0.875rem);
 }
 
@@ -334,7 +341,7 @@
   align-items: center;
   gap: 0.25rem;
   font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-text, #000000);
+  color: var(--color-text);
   cursor: pointer;
 }
 
@@ -343,7 +350,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-text, #000000);
+  color: var(--color-text);
   cursor: pointer;
 }
 
@@ -357,15 +364,17 @@
 .printtool-calibration-settings__label {
   font-size: var(--font-size-sm, 0.875rem);
   font-weight: var(--font-weight-medium, 500);
-  color: var(--color-text, #000000);
+  color: var(--color-text);
 }
 
 .printtool-calibration-settings__select {
+  box-sizing: border-box;
+  width: 100%;
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border, #e5e7eb);
+  border: 1px solid var(--color-border);
   border-radius: calc(var(--border-radius, 8px) - 2px);
-  background-color: var(--color-bg, #ffffff);
-  color: var(--color-text, #000000);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   font-size: var(--font-size-sm, 0.875rem);
 }
 
@@ -377,7 +386,7 @@
 
 .printtool-calibration-settings__variations-label {
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
 }
 
 .printtool-calibration-settings__variations-grid {
@@ -392,9 +401,9 @@
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.375rem;
-  border: 2px solid var(--color-border, #e5e7eb);
+  border: 2px solid var(--color-border);
   border-radius: calc(var(--border-radius, 8px) - 2px);
-  background-color: var(--color-bg, #ffffff);
+  background-color: var(--color-bg);
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 0;
@@ -402,12 +411,12 @@
 }
 
 .printtool-calibration-settings__variation:hover {
-  border-color: var(--color-primary, #0066cc);
+  border-color: var(--color-primary);
 }
 
 .printtool-calibration-settings__variation--selected {
-  border-color: var(--color-primary, #0066cc);
-  background-color: var(--color-primary-bg, #eff6ff);
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-bg);
 }
 
 .printtool-calibration-settings__variation-preview {
@@ -424,13 +433,13 @@
 
 .printtool-calibration-settings__variation-placeholder {
   aspect-ratio: 1;
-  background-color: var(--color-bg-alt, #f3f4f6);
+  background-color: var(--color-bg-alt);
   border-radius: 2px;
 }
 
 .printtool-calibration-settings__variation-label {
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-secondary, #64748b);
+  color: var(--color-text-secondary);
   text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -439,17 +448,17 @@
 
 .printtool-calibration-settings__selected-info {
   padding: 0.5rem 0.75rem;
-  background-color: var(--color-bg-alt, #f9fafb);
+  background-color: var(--color-bg-alt);
   border-radius: calc(var(--border-radius, 8px) - 2px);
   font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-text, #000000);
+  color: var(--color-text);
 }
 
 .printtool-calibration-settings__args {
   margin-top: 0.25rem;
   font-family: monospace;
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--color-text-muted);
   word-break: break-all;
 }
 
@@ -473,29 +482,29 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  background-color: var(--color-bg-alt, #f3f4f6);
-  border: 1px solid var(--color-border, #d1d5db);
+  background-color: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
   border-radius: var(--border-radius-sm, 4px);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .printtool-crop-anchor-grid__button:hover {
-  background-color: var(--color-bg-hover, #e5e7eb);
+  background-color: var(--color-bg-hover);
 }
 
 .printtool-crop-anchor-grid__button--active {
-  background-color: var(--color-primary, #0066cc);
-  border-color: var(--color-primary, #0066cc);
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .printtool-crop-anchor-grid__button--active .printtool-crop-anchor-grid__dot {
-  background-color: white;
+  background-color: var(--color-text-on-primary);
 }
 
 .printtool-crop-anchor-grid__dot {
   width: 8px;
   height: 8px;
-  background-color: var(--color-text-secondary, #64748b);
+  background-color: var(--color-text-secondary);
   border-radius: 50%;
 }

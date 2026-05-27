@@ -41,6 +41,7 @@ export interface ModeActions {
   setTcgGame: (game: PrintToolState['tcgGame']) => void
   setTcgInputMode: (m: PrintToolState['tcgInputMode']) => void
   setTcgInput: (input: string) => void
+  setTcgCutlines: (on: boolean) => void
   addTcgCustomImages: (images: PrintToolState['tcgCustomImages']) => void
   removeTcgCustomImage: (id: string) => void
   clearTcgCustomImages: () => void

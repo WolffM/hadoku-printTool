@@ -70,6 +70,7 @@ export default function App(props: PrintToolProps = {}) {
     setTcgGame: tool.setTcgGame,
     setTcgInputMode: tool.setTcgInputMode,
     setTcgInput: tool.setTcgInput,
+    setTcgCutlines: tool.setTcgCutlines,
     addTcgCustomImages: tool.addTcgCustomImages,
     removeTcgCustomImage: tool.removeTcgCustomImage,
     clearTcgCustomImages: tool.clearTcgCustomImages,
@@ -156,6 +157,7 @@ export default function App(props: PrintToolProps = {}) {
               {state.riftboundDeck ? (
                 <RiftboundDeckEditor
                   deck={state.riftboundDeck}
+                  cutlines={state.tcgCutlines}
                   onSlotVariantChange={tool.setRiftboundSlotVariant}
                   onClose={() => tool.setRiftboundDeck(null)}
                 />

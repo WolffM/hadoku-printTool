@@ -37,9 +37,11 @@ export const tcgMode: ModeModule = {
       tcgInputMode={state.tcgInputMode}
       tcgInput={state.tcgInput}
       tcgCustomImages={state.tcgCustomImages}
+      tcgCutlines={state.tcgCutlines}
       onGameChange={actions.setTcgGame}
       onInputModeChange={actions.setTcgInputMode}
       onInputChange={actions.setTcgInput}
+      onCutlinesChange={actions.setTcgCutlines}
       onAddCustomImages={actions.addTcgCustomImages}
       onRemoveCustomImage={actions.removeTcgCustomImage}
       onClearCustomImages={actions.clearTcgCustomImages}
@@ -87,6 +89,7 @@ export const tcgMode: ModeModule = {
       sheets = await createTcgSheets({
         source,
         cards: fetched,
+        cutlines: state.tcgCutlines,
         onProgress: (current, total) =>
           reportProgress({
             step: current,
@@ -109,12 +112,16 @@ export const tcgMode: ModeModule = {
       })
 
       const images = await Promise.all(state.tcgCustomImages.map(c => loadImage(c.dataUrl)))
-      sheets = await createTcgSheetsFromImages(source, images, (current, total) =>
-        reportProgress({
-          step: current,
-          total,
-          message: `Composing card ${current}/${total}`
-        })
+      sheets = await createTcgSheetsFromImages(
+        source,
+        images,
+        (current, total) =>
+          reportProgress({
+            step: current,
+            total,
+            message: `Composing card ${current}/${total}`
+          }),
+        state.tcgCutlines
       )
     }
 

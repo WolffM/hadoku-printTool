@@ -23,13 +23,14 @@ import cardbackUrl from '../../assets/cardback.webp?inline'
 
 interface Props {
   deck: RiftboundDeck
+  cutlines: boolean
   onSlotVariantChange: (slotIndex: number, variantId: string) => void
   onClose: () => void
 }
 
 const CARDS_PER_PAGE = 9 // 3×3 — matches the print sheet layout
 
-export function RiftboundDeckEditor({ deck, onSlotVariantChange, onClose }: Props) {
+export function RiftboundDeckEditor({ deck, cutlines, onSlotVariantChange, onClose }: Props) {
   const [pageIndex, setPageIndex] = useState(0)
   const [isSaving, setIsSaving] = useState(false)
   const [saveProgress, setSaveProgress] = useState<{ done: number; total: number } | null>(null)
@@ -77,6 +78,7 @@ export function RiftboundDeckEditor({ deck, onSlotVariantChange, onClose }: Prop
       const sheets = await createTcgSheets({
         source,
         cards,
+        cutlines,
         onProgress: (current, total) => setSaveProgress({ done: current, total })
       })
 

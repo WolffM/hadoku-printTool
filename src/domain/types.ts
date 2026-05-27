@@ -195,6 +195,8 @@ export interface PrintToolState {
   tcgInputMode: TcgInputMode
   tcgInput: string
   tcgCustomImages: TcgCustomImage[]
+  /** Draw printer's crop marks at every card-edge intersection. */
+  tcgCutlines: boolean
   /** Active Riftbound deck-editor session, or null when not in editor view. */
   riftboundDeck: RiftboundDeck | null
 
@@ -236,6 +238,7 @@ export type PrintToolAction =
   | { type: 'SET_TCG_GAME'; payload: TcgGame }
   | { type: 'SET_TCG_INPUT_MODE'; payload: TcgInputMode }
   | { type: 'SET_TCG_INPUT'; payload: string }
+  | { type: 'SET_TCG_CUTLINES'; payload: boolean }
   | { type: 'SET_RIFTBOUND_DECK'; payload: RiftboundDeck | null }
   | { type: 'SET_RIFTBOUND_SLOT_VARIANT'; payload: { slotIndex: number; variantId: string } }
   | { type: 'SET_STICKER_SETTINGS'; payload: Partial<StickerSettings> }

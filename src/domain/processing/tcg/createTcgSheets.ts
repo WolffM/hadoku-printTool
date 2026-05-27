@@ -11,7 +11,7 @@
  */
 
 import { TCG_DPI, TCG_PAGE_WIDTH_INCHES, TCG_PAGE_HEIGHT_INCHES } from '../../constants'
-import { imageToCanvas, resizeCanvas, createBlankSheet, calculateGridOffsets } from '../canvasUtils'
+import { resizeCanvas, createBlankSheet, calculateGridOffsets } from '../canvasUtils'
 import type { CardSource, FetchedCard } from './types'
 
 export interface TcgSheet {
@@ -23,6 +23,8 @@ export interface CreateTcgSheetsOptions {
   source: CardSource
   cards: FetchedCard[]
   onProgress?: (current: number, total: number) => void
+  /** Draw printer's crop marks at every card-edge intersection. Default false. */
+  cutlines?: boolean
 }
 
 interface SheetLayout {
@@ -65,7 +67,8 @@ function computeLayout(source: CardSource): SheetLayout {
 export async function createTcgSheets({
   source,
   cards,
-  onProgress
+  onProgress,
+  cutlines = false
 }: CreateTcgSheetsOptions): Promise<TcgSheet[]> {
   if (cards.length === 0) return []
 
@@ -90,11 +93,7 @@ export async function createTcgSheets({
       const x = layout.xOffset + col * layout.cardWidthPx
       const y = layout.yOffset + row * layout.cardHeightPx
 
-      const frontTile = await resizeCanvas(
-        imageToCanvas(card.front),
-        layout.cardWidthPx,
-        layout.cardHeightPx
-      )
+      const frontTile = await renderCardToSlot(card.front, layout.cardWidthPx, layout.cardHeightPx)
       frontCtx.drawImage(frontTile, x, y)
 
       if (card.back) {
@@ -102,11 +101,7 @@ export async function createTcgSheets({
           back = createBlankSheet(layout.pageWidthPx, layout.pageHeightPx, 'white')
           backCtx = back.getContext('2d')
         }
-        const backTile = await resizeCanvas(
-          imageToCanvas(card.back),
-          layout.cardWidthPx,
-          layout.cardHeightPx
-        )
+        const backTile = await renderCardToSlot(card.back, layout.cardWidthPx, layout.cardHeightPx)
         // Mirror column so duplex printing (flip-on-long-edge) aligns front/back.
         const mirroredCol = layout.cardsPerRow - 1 - col
         const backX = layout.xOffset + mirroredCol * layout.cardWidthPx
@@ -117,10 +112,110 @@ export async function createTcgSheets({
       onProgress?.(processed, cards.length)
     }
 
+    if (cutlines) {
+      drawCutlines(frontCtx, layout)
+      if (back && backCtx) drawCutlines(backCtx, layout)
+    }
+
     sheets.push(back ? { front, back } : { front })
   }
 
   return sheets
+}
+
+/**
+ * Draw printer's crop marks (tick marks) at every card-edge intersection.
+ * Marks extend from the page edge inward to the card edge, sitting in the
+ * sheet's outer margin so they never overlap card art.
+ */
+function drawCutlines(ctx: CanvasRenderingContext2D, layout: SheetLayout) {
+  // 1pt at 300dpi ≈ 0.5px — keep it crisp but visible at print resolution.
+  const lineWidth = Math.max(1, Math.round(layout.cardWidthPx * 0.002))
+  // Mark length: ~3mm; long enough to align a ruler, short enough to fit the margin.
+  const markLengthPx = Math.min(
+    Math.round(0.12 * (layout.cardWidthPx / 2.5)), // 0.12" if slot is 2.5"
+    layout.xOffset - 4,
+    layout.yOffset - 4
+  )
+  if (markLengthPx < 4) return // No margin to draw into.
+
+  // cardsPerCol isn't on SheetLayout (only cardsPerRow + cardsPerSheet), so derive it.
+  const cardsPerCol = layout.cardsPerSheet / layout.cardsPerRow
+  const gridRightX = layout.xOffset + layout.cardsPerRow * layout.cardWidthPx
+  const gridBottomY = layout.yOffset + cardsPerCol * layout.cardHeightPx
+
+  ctx.save()
+  ctx.strokeStyle = 'black'
+  ctx.lineWidth = lineWidth
+  ctx.lineCap = 'butt'
+
+  // Vertical ticks at column boundaries (drawn in top + bottom margin).
+  for (let c = 0; c <= layout.cardsPerRow; c++) {
+    const x = layout.xOffset + c * layout.cardWidthPx
+    ctx.beginPath()
+    ctx.moveTo(x, layout.yOffset - markLengthPx)
+    ctx.lineTo(x, layout.yOffset)
+    ctx.moveTo(x, gridBottomY)
+    ctx.lineTo(x, gridBottomY + markLengthPx)
+    ctx.stroke()
+  }
+
+  // Horizontal ticks at row boundaries (drawn in left + right margin).
+  for (let r = 0; r <= cardsPerCol; r++) {
+    const y = layout.yOffset + r * layout.cardHeightPx
+    ctx.beginPath()
+    ctx.moveTo(layout.xOffset - markLengthPx, y)
+    ctx.lineTo(layout.xOffset, y)
+    ctx.moveTo(gridRightX, y)
+    ctx.lineTo(gridRightX + markLengthPx, y)
+    ctx.stroke()
+  }
+
+  ctx.restore()
+}
+
+/**
+ * Resize an image into a card slot without distorting its aspect ratio.
+ *
+ * Pica's `resize(src, target)` stretches to the target dimensions — fine
+ * when the source already matches the slot aspect, but it skews the
+ * cardback (1490×2080 → 0.7163) when squeezed into a poker-aspect slot
+ * (750×1050 → 0.7143). Here we crop a centered region of the source to the
+ * slot's aspect first, then pica only scales (no stretch).
+ */
+async function renderCardToSlot(
+  img: HTMLImageElement,
+  slotWidth: number,
+  slotHeight: number
+): Promise<HTMLCanvasElement> {
+  const srcW = img.naturalWidth
+  const srcH = img.naturalHeight
+  const slotAspect = slotWidth / slotHeight
+  const srcAspect = srcW / srcH
+
+  let cropW = srcW
+  let cropH = srcH
+  let cropX = 0
+  let cropY = 0
+  if (srcAspect > slotAspect) {
+    // Source is wider than slot → crop sides.
+    cropW = srcH * slotAspect
+    cropX = (srcW - cropW) / 2
+  } else if (srcAspect < slotAspect) {
+    // Source is taller than slot → crop top/bottom.
+    cropH = srcW / slotAspect
+    cropY = (srcH - cropH) / 2
+  }
+
+  const cropped = document.createElement('canvas')
+  cropped.width = Math.max(1, Math.round(cropW))
+  cropped.height = Math.max(1, Math.round(cropH))
+  const cropCtx = cropped.getContext('2d')!
+  cropCtx.fillStyle = 'white'
+  cropCtx.fillRect(0, 0, cropped.width, cropped.height)
+  cropCtx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, cropped.width, cropped.height)
+
+  return resizeCanvas(cropped, slotWidth, slotHeight)
 }
 
 /**
@@ -130,8 +225,9 @@ export async function createTcgSheets({
 export async function createTcgSheetsFromImages(
   source: CardSource,
   images: HTMLImageElement[],
-  onProgress?: (current: number, total: number) => void
+  onProgress?: (current: number, total: number) => void,
+  cutlines = false
 ): Promise<TcgSheet[]> {
   const cards: FetchedCard[] = images.map(front => ({ front }))
-  return createTcgSheets({ source, cards, onProgress })
+  return createTcgSheets({ source, cards, onProgress, cutlines })
 }
