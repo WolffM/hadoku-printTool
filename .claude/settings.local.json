@@ -20,7 +20,10 @@
       "Bash(git config:*)",
       "Bash(pnpm add:*)",
       "Bash(cat:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(curl -sL -o /dev/null -w \"GET /printtool/: %{http_code}\\\\n\" https://hadoku.me/printtool/)",
+      "Bash(curl -s https://hadoku.me/printtool/)",
+      "Bash(awk ' *)"
     ]
   }
 }
