@@ -9,17 +9,17 @@
   gap: 0.25rem;
   padding: 0.25rem;
   background-color: var(--color-bg-alt);
-  border-radius: var(--border-radius, 8px);
+  border-radius: var(--hdk-radius, 8px);
 }
 
 .printtool-mode-selector__button {
   flex: 1;
   padding: 0.75rem 1rem;
   border: none;
-  border-radius: calc(var(--border-radius, 8px) - 2px);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
   background-color: transparent;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -33,7 +33,7 @@
 .printtool-mode-selector__button--active {
   background-color: var(--color-primary);
   color: var(--color-text-on-primary);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--hdk-shadow-sm);
 }
 
 /* Action Buttons */
@@ -44,7 +44,7 @@
   padding: 1rem;
   background-color: var(--color-bg-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius, 8px);
+  border-radius: var(--hdk-radius, 8px);
 }
 
 .printtool-actions__process {
@@ -55,8 +55,8 @@
 .printtool-actions__button {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: var(--border-radius, 8px);
-  font-size: var(--font-size-sm, 0.875rem);
+  border-radius: var(--hdk-radius, 8px);
+  font-size: var(--hdk-text-sm, 0.875rem);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -105,7 +105,7 @@
 }
 
 .printtool-actions__download-label {
-  font-size: var(--font-size-xs, 0.75rem);
+  font-size: var(--hdk-text-xs, 0.75rem);
   color: var(--color-text-secondary);
   font-weight: var(--font-weight-semibold);
 }
@@ -131,7 +131,7 @@
   gap: 0.5rem;
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
-  font-size: var(--font-size-xs, 0.75rem);
+  font-size: var(--hdk-text-xs, 0.75rem);
   font-weight: var(--font-weight-semibold);
   background-color: var(--color-bg-alt);
   transition: all 0.2s ease;
@@ -174,8 +174,8 @@
   border: none;
   border-radius: 9999px;
   background-color: var(--color-danger);
-  color: var(--color-danger-text);
-  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-on-danger);
+  font-size: var(--hdk-text-xs, 0.75rem);
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -226,8 +226,8 @@
   gap: 1rem;
   padding: 2rem;
   background-color: var(--color-bg-card);
-  border-radius: var(--border-radius, 8px);
-  box-shadow: var(--shadow-modal);
+  border-radius: var(--hdk-radius, 8px);
+  box-shadow: var(--hdk-shadow-lg);
   min-width: 300px;
   max-width: 400px;
 }
@@ -243,7 +243,7 @@
 
 .printtool-processing-overlay__title {
   margin: 0;
-  font-size: var(--font-size-lg, 1.25rem);
+  font-size: var(--hdk-text-lg, 1.25rem);
   font-weight: var(--font-weight-semibold, 600);
   color: var(--color-text);
 }
@@ -256,7 +256,7 @@
 }
 
 .printtool-processing-overlay__message {
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   color: var(--color-text-secondary);
   text-align: center;
 }
@@ -276,7 +276,7 @@
 }
 
 .printtool-processing-overlay__stats {
-  font-size: var(--font-size-xs, 0.75rem);
+  font-size: var(--hdk-text-xs, 0.75rem);
   color: var(--color-text-muted);
   text-align: center;
 }

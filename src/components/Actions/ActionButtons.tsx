@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react'
-import { logger } from '@wolffm/task-ui-components'
+import { logger } from '@wolffm/logger/client'
 import type { PrintMode, ProcessedResult } from '../../domain/types'
 import {
   downloadCanvasAsPng,

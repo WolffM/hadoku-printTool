@@ -14,7 +14,7 @@
  */
 
 import { useState } from 'react'
-import { logger } from '@wolffm/task-ui-components'
+import { logger } from '@wolffm/logger/client'
 import type { RiftboundDeck } from '../../domain/types'
 import { createTcgSheets, getSource, type FetchedCard } from '../../domain/processing/tcg'
 import { loadImage } from '../../domain/processing/canvasUtils'

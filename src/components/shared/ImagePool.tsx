@@ -8,7 +8,7 @@
  */
 
 import React, { useCallback, useRef, useState } from 'react'
-import { logger } from '@wolffm/task-ui-components'
+import { logger } from '@wolffm/logger/client'
 import type { PooledImage } from '../../domain/types'
 import { ACCEPTED_IMAGE_TYPES, ACCEPTED_EXTENSIONS } from '../../domain/constants'
 

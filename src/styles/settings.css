@@ -13,7 +13,7 @@
   padding: 1rem;
   background-color: var(--color-bg-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius, 8px);
+  border-radius: var(--hdk-radius, 8px);
 }
 
 .printtool-settings-panel__section {
@@ -24,14 +24,14 @@
 
 .printtool-settings-panel__title {
   margin: 0;
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   font-weight: var(--font-weight-semibold, 600);
   color: var(--color-text);
 }
 
 .printtool-settings-panel__description {
   margin: 0;
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   color: var(--color-text-secondary);
 }
 
@@ -46,8 +46,8 @@
 .printtool-settings-panel__info {
   padding: 0.5rem 0.75rem;
   background-color: var(--color-bg-alt);
-  border-radius: calc(var(--border-radius, 8px) - 2px);
-  font-size: var(--font-size-xs, 0.75rem);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
+  font-size: var(--hdk-text-xs, 0.75rem);
   color: var(--color-text-secondary);
 }
 
@@ -69,7 +69,7 @@
 }
 
 .printtool-settings__label {
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text);
 }
@@ -80,10 +80,10 @@
   width: 100%;
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--color-border);
-  border-radius: calc(var(--border-radius, 8px) - 2px);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   transition: border-color 0.2s ease;
 }
 
@@ -101,7 +101,7 @@
 
 .printtool-settings__hint {
   margin: 0.25rem 0 0 0;
-  font-size: var(--font-size-xs, 0.75rem);
+  font-size: var(--hdk-text-xs, 0.75rem);
   color: var(--color-text-secondary);
   font-style: italic;
   line-height: 1.4;
@@ -139,7 +139,7 @@
 .printtool-settings__slider-labels {
   display: flex;
   justify-content: space-between;
-  font-size: var(--font-size-xs, 0.75rem);
+  font-size: var(--hdk-text-xs, 0.75rem);
   color: var(--color-text-secondary);
 }
 
@@ -148,7 +148,7 @@
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   color: var(--color-text);
 }
 
@@ -162,11 +162,11 @@
 .printtool-settings__layout-info {
   padding: 0.75rem;
   background-color: var(--color-primary-bg);
-  border-radius: calc(var(--border-radius, 8px) - 2px);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
 }
 
 .printtool-settings__layout-label {
-  font-size: var(--font-size-xs, 0.75rem);
+  font-size: var(--hdk-text-xs, 0.75rem);
   font-weight: var(--font-weight-semibold);
   color: var(--color-primary);
   text-transform: uppercase;
@@ -174,7 +174,7 @@
 }
 
 .printtool-settings__layout-value {
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   font-weight: var(--font-weight-semibold, 600);
   color: var(--color-text);
   margin-top: 0.25rem;
@@ -183,8 +183,8 @@
 .printtool-settings__layout-error {
   padding: 0.75rem;
   background-color: var(--color-danger-light);
-  border-radius: calc(var(--border-radius, 8px) - 2px);
-  font-size: var(--font-size-sm, 0.875rem);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
+  font-size: var(--hdk-text-sm, 0.875rem);
   color: var(--color-danger);
 }
 
@@ -195,8 +195,8 @@
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   background-color: var(--color-warning-bg);
-  border-radius: calc(var(--border-radius, 8px) - 2px);
-  font-size: var(--font-size-sm, 0.875rem);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
+  font-size: var(--hdk-text-sm, 0.875rem);
   color: var(--color-warning);
 }
 
@@ -212,7 +212,7 @@
 }
 
 .printtool-tcg-settings__label {
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text);
 }
@@ -222,10 +222,10 @@
   width: 100%;
   padding: 0.4rem 0.6rem;
   border: 1px solid var(--color-border);
-  border-radius: calc(var(--border-radius, 8px) - 2px);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
 }
 
 .printtool-tcg-settings__tabs {
@@ -233,7 +233,7 @@
   gap: 0.25rem;
   padding: 0.25rem;
   background-color: var(--color-bg-alt);
-  border-radius: calc(var(--border-radius, 8px) - 2px);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
 }
 
 .printtool-tcg-settings__tab {
@@ -241,8 +241,8 @@
   padding: 0.5rem 0.75rem;
   border: none;
   background: transparent;
-  border-radius: calc(var(--border-radius, 8px) - 4px);
-  font-size: var(--font-size-sm, 0.875rem);
+  border-radius: calc(var(--hdk-radius, 8px) - 4px);
+  font-size: var(--hdk-text-sm, 0.875rem);
   color: var(--color-text-secondary);
   cursor: pointer;
   transition: background-color 0.15s ease;
@@ -264,9 +264,9 @@
   min-height: 200px;
   padding: 0.5rem 0.75rem;
   font-family: ui-monospace, 'Cascadia Code', Menlo, monospace;
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   border: 1px solid var(--color-border);
-  border-radius: calc(var(--border-radius, 8px) - 2px);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
   background-color: var(--color-bg-card);
   color: var(--color-text);
   resize: vertical;
@@ -278,7 +278,7 @@
 }
 
 .printtool-tcg-settings__hint {
-  font-size: var(--font-size-xs, 0.75rem);
+  font-size: var(--hdk-text-xs, 0.75rem);
   color: var(--color-text-secondary);
 }
 
@@ -293,7 +293,7 @@
 
 .printtool-tcg-settings__editor-hint {
   margin: 0;
-  font-size: var(--font-size-xs, 0.75rem);
+  font-size: var(--hdk-text-xs, 0.75rem);
   color: var(--color-text-secondary);
 }
 
@@ -302,7 +302,7 @@
   padding: 0.4rem 0.6rem;
   background-color: var(--color-bg-alt);
   border-radius: 4px;
-  font-size: var(--font-size-xs, 0.75rem);
+  font-size: var(--hdk-text-xs, 0.75rem);
   color: var(--color-text);
 }
 
@@ -314,7 +314,7 @@
 }
 
 .printtool-sticker-settings__label {
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text);
 }
@@ -324,10 +324,10 @@
   width: 100%;
   padding: 0.4rem 0.6rem;
   border: 1px solid var(--color-border);
-  border-radius: calc(var(--border-radius, 8px) - 2px);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
   background-color: var(--color-bg-card);
   color: var(--color-text);
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
 }
 
 .printtool-sticker-settings__radio-group {
@@ -340,7 +340,7 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   color: var(--color-text);
   cursor: pointer;
 }
@@ -349,7 +349,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   color: var(--color-text);
   cursor: pointer;
 }
@@ -362,7 +362,7 @@
 }
 
 .printtool-calibration-settings__label {
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text);
 }
@@ -372,10 +372,10 @@
   width: 100%;
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--color-border);
-  border-radius: calc(var(--border-radius, 8px) - 2px);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
 }
 
 .printtool-calibration-settings__variations {
@@ -385,7 +385,7 @@
 }
 
 .printtool-calibration-settings__variations-label {
-  font-size: var(--font-size-xs, 0.75rem);
+  font-size: var(--hdk-text-xs, 0.75rem);
   color: var(--color-text-secondary);
 }
 
@@ -402,7 +402,7 @@
   gap: 0.25rem;
   padding: 0.375rem;
   border: 2px solid var(--color-border);
-  border-radius: calc(var(--border-radius, 8px) - 2px);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
   background-color: var(--color-bg);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -438,7 +438,7 @@
 }
 
 .printtool-calibration-settings__variation-label {
-  font-size: var(--font-size-xs, 0.75rem);
+  font-size: var(--hdk-text-xs, 0.75rem);
   color: var(--color-text-secondary);
   text-align: center;
   overflow: hidden;
@@ -449,15 +449,15 @@
 .printtool-calibration-settings__selected-info {
   padding: 0.5rem 0.75rem;
   background-color: var(--color-bg-alt);
-  border-radius: calc(var(--border-radius, 8px) - 2px);
-  font-size: var(--font-size-sm, 0.875rem);
+  border-radius: calc(var(--hdk-radius, 8px) - 2px);
+  font-size: var(--hdk-text-sm, 0.875rem);
   color: var(--color-text);
 }
 
 .printtool-calibration-settings__args {
   margin-top: 0.25rem;
   font-family: monospace;
-  font-size: var(--font-size-xs, 0.75rem);
+  font-size: var(--hdk-text-xs, 0.75rem);
   color: var(--color-text-muted);
   word-break: break-all;
 }
@@ -484,7 +484,7 @@
   padding: 0;
   background-color: var(--color-bg-alt);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-sm, 4px);
+  border-radius: var(--hdk-radius-sm, 4px);
   cursor: pointer;
   transition: all 0.2s ease;
 }

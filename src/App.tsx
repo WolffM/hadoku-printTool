@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
-import { ConnectedThemePicker, LoadingSkeleton, logger } from '@wolffm/task-ui-components'
+import { ConnectedThemePicker, LoadingSkeleton } from '@wolffm/task-ui-components'
+import { logger } from '@wolffm/logger/client'
 import { THEME_ICON_MAP } from '@wolffm/themes'
 import { useTheme } from './hooks/useTheme'
 import { usePrintTool } from './hooks/usePrintTool'

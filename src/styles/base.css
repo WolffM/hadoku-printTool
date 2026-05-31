@@ -78,7 +78,7 @@
 .printtool__header h1 {
   margin: 0;
   color: var(--color-primary);
-  font-size: var(--font-size-lg, 1.5rem);
+  font-size: var(--hdk-text-lg, 1.5rem);
   font-weight: var(--font-weight-bold, 700);
 }
 
@@ -91,14 +91,14 @@
 .printtool__content {
   padding: 1rem;
   background-color: var(--color-bg-card);
-  border-radius: var(--border-radius, 8px);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--hdk-radius, 8px);
+  box-shadow: var(--hdk-shadow-sm);
 }
 
 .printtool__content p {
   margin: 0.5rem 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-base, 1rem);
+  font-size: var(--hdk-text-base, 1rem);
   line-height: var(--line-height-relaxed, 1.625);
 }
 
@@ -132,7 +132,7 @@
   padding: 0.75rem 1rem;
   background-color: var(--color-danger-light);
   border: 1px solid var(--color-danger);
-  border-radius: var(--border-radius, 8px);
+  border-radius: var(--hdk-radius, 8px);
   color: var(--color-danger);
-  font-size: var(--font-size-sm, 0.875rem);
+  font-size: var(--hdk-text-sm, 0.875rem);
 }

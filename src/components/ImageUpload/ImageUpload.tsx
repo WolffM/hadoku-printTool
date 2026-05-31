@@ -14,7 +14,7 @@ import {
   type ChangeEvent,
   type KeyboardEvent
 } from 'react'
-import { logger } from '@wolffm/task-ui-components'
+import { logger } from '@wolffm/logger/client'
 import type { ImageFile } from '../../domain/types'
 import { ACCEPTED_EXTENSIONS } from '../../domain/constants'
 import { loadImageFile } from '../../hooks/loadImageFile'

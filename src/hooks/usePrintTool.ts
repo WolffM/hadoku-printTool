@@ -4,7 +4,7 @@
  */
 
 import { useReducer, useEffect, useCallback } from 'react'
-import { logger } from '@wolffm/task-ui-components'
+import { logger } from '@wolffm/logger/client'
 import type {
   PrintToolState,
   PrintToolAction,

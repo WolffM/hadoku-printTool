@@ -2,7 +2,7 @@
  * Sticker mode — Python sidecar (bg removal + cutline + tile) via local server.
  */
 
-import { logger } from '@wolffm/task-ui-components'
+import { logger } from '@wolffm/logger/client'
 import type { ModeModule } from './types'
 import { StickerSettings } from '../../components/Settings/StickerSettings'
 import {

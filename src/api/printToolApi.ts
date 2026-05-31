@@ -3,7 +3,7 @@
  * Backend API calls for ImageMagick processing and TIFF export.
  */
 
-import { logger } from '@wolffm/task-ui-components'
+import { logger } from '@wolffm/logger/client'
 import type {
   CalibrationRequest,
   CalibrationResponse,

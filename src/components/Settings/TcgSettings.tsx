@@ -7,7 +7,7 @@
  */
 
 import { useState } from 'react'
-import { logger } from '@wolffm/task-ui-components'
+import { logger } from '@wolffm/logger/client'
 import type { TcgGame, TcgInputMode, TcgCustomImage, RiftboundDeck } from '../../domain/types'
 import { ImagePool } from '../shared/ImagePool'
 import { SettingsPanel, SettingsSection, SettingsInfo } from '../shared/SettingsPanel'

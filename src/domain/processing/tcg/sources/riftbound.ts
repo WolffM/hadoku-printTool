@@ -34,7 +34,7 @@
  * missing cards. Format: `{"Card Name": "SET-NUM"}` (a/b suffix optional).
  */
 
-import { logger } from '@wolffm/task-ui-components'
+import { logger } from '@wolffm/logger/client'
 import type { CardEntry, CardSource, FetchedCard } from '../types'
 import { loadImage } from '../../canvasUtils'
 import nameToIdRaw from './riftbound-index.json'

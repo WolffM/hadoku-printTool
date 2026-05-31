@@ -7,7 +7,7 @@
  * source's card dimensions and grid.
  */
 
-import { logger } from '@wolffm/task-ui-components'
+import { logger } from '@wolffm/logger/client'
 import type { ModeModule } from './types'
 import { TcgSettings } from '../../components/Settings/TcgSettings'
 import {
