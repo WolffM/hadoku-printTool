@@ -3,6 +3,7 @@
   "version": "1.1.8",
   "description": "Image manipulation tool for cropping, resizing, and collating images for print",
   "type": "module",
+  "packageManager": "pnpm@11.5.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/WolffM/hadoku-printTool.git"
