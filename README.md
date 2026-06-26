@@ -20,12 +20,35 @@ Print Tool is a React-based child app that provides image manipulation capabilit
 - **Simple Tiling** - Tile a single image across a page (e.g., wallet photos, stickers)
 - **Duplex Printing** - Create front/back sheets for double-sided postcards
 - **Calibration** - Generate color/density calibration sheets via backend ImageMagick processing
-- **Collage** - Arrange multiple images on a page using various layout algorithms:
-  - FFD-Row: Row-based bin packing, good for similar-sized images
-  - Masonry: Pinterest-style columns, good for portrait-heavy sets
-  - Guillotine: Space-efficient bin packing with guillotine cuts
-  - Spiral: Fill from edges inward in a spiral pattern
-  - Treemap: Recursive space partitioning for balanced layouts
+- **Collage** - Auto-tile a pool of images onto a page using a chosen layout algorithm (see below)
+- **TCG Proxies** - Lay out trading-card proxies (MTG, Riftbound) at true card size for print
+- **Stickers** - Arrange die-cut sticker sheets via backend background-removal processing
+
+### Collage
+
+Drop in a pool of images and the selected algorithm packs them onto the page, solving for a
+scale factor that fits everything while respecting the controls below. Output renders to a
+canvas and exports as PNG or TIFF.
+
+Layout algorithms:
+
+- **Row Packing (FFD-Row)**: Row-based bin packing, good for similar-sized images
+- **Masonry**: Pinterest-style columns, good for portrait-heavy sets
+- **Guillotine**: Space-efficient bin packing with guillotine cuts, best for mixed sizes
+- **Spiral**: Fill from edges inward in a spiral pattern
+- **Treemap**: Recursive space partitioning for balanced layouts
+
+Controls:
+
+- **Paper Size** (11x17, Letter, A4, A3, Legal, …) and **Output DPI** (300 fast / 600 quality)
+- **Gap Size** — spacing between images, in inches
+- **Max Downscale** — how far images may shrink to fit better
+- **Normalize Image Sizes** — scale larger images down more so all images end up similar sizes
+- **Min Image Size** — floor on placed image size, in inches
+- **Allow Cropping** — crop images (with a crop anchor) to better fill available space
+
+Layouts are driven by a seeded RNG (`SeededRandom`), so a given seed reproduces the same
+arrangement; reprocessing without a fixed seed reshuffles for a new layout.
 
 ## Development
 
