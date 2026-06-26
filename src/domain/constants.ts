@@ -21,6 +21,7 @@ export const TILE_SIZES = {
 
 export const PAPER_SIZES = {
   '11x17': [11, 17] as const,
+  '13x19': [13, 19] as const,
   '11x9': [11, 9] as const,
   Letter: [8.5, 11] as const,
   A4: [8.27, 11.69] as const,
