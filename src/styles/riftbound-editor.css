@@ -12,7 +12,7 @@
   padding: 1rem;
   background-color: var(--color-bg-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--hdk-radius, 8px);
+  border-radius: var(--hdk-radius);
 }
 
 .printtool-riftbound-editor--empty {
@@ -30,14 +30,14 @@
 
 .printtool-riftbound-editor__title {
   margin: 0;
-  font-size: var(--hdk-text-base, 1rem);
+  font-size: var(--hdk-text-base);
   font-weight: var(--font-weight-semibold, 600);
   color: var(--color-text);
 }
 
 .printtool-riftbound-editor__subtitle {
   margin: 0.25rem 0 0;
-  font-size: var(--hdk-text-sm, 0.875rem);
+  font-size: var(--hdk-text-sm);
   color: var(--color-text-secondary);
 }
 
@@ -48,11 +48,11 @@
 
 .printtool-riftbound-editor__error {
   padding: 0.5rem 0.75rem;
-  background-color: var(--color-danger-light);
+  background-color: var(--color-danger-bg);
   color: var(--color-danger-dark);
   border: 1px solid var(--color-danger);
-  border-radius: calc(var(--hdk-radius, 8px) - 2px);
-  font-size: var(--hdk-text-sm, 0.875rem);
+  border-radius: calc(var(--hdk-radius) - 2px);
+  font-size: var(--hdk-text-sm);
 }
 
 .printtool-riftbound-editor__grid {
@@ -68,13 +68,13 @@
   padding: 0.5rem;
   background-color: var(--color-bg-alt);
   border: 1px solid var(--color-border);
-  border-radius: calc(var(--hdk-radius, 8px) - 2px);
+  border-radius: calc(var(--hdk-radius) - 2px);
 }
 
 .printtool-riftbound-editor__select {
   width: 100%;
   padding: 0.35rem 0.5rem;
-  font-size: var(--hdk-text-xs, 0.75rem);
+  font-size: var(--hdk-text-xs);
   border: 1px solid var(--color-border);
   border-radius: 4px;
   background-color: var(--color-bg-card);
@@ -106,13 +106,13 @@
 
 .printtool-riftbound-editor__thumb-missing {
   padding: 0.5rem;
-  font-size: var(--hdk-text-xs, 0.75rem);
+  font-size: var(--hdk-text-xs);
   color: var(--color-text-secondary);
   text-align: center;
 }
 
 .printtool-riftbound-editor__caption {
-  font-size: var(--hdk-text-xs, 0.75rem);
+  font-size: var(--hdk-text-xs);
   color: var(--color-text-secondary);
   white-space: nowrap;
   overflow: hidden;
@@ -127,18 +127,18 @@
 }
 
 .printtool-riftbound-editor__pager-label {
-  font-size: var(--hdk-text-sm, 0.875rem);
+  font-size: var(--hdk-text-sm);
   color: var(--color-text-secondary);
 }
 
 .printtool-riftbound-editor__button {
   padding: 0.5rem 0.85rem;
-  font-size: var(--hdk-text-sm, 0.875rem);
+  font-size: var(--hdk-text-sm);
   font-weight: var(--font-weight-semibold);
   background-color: var(--color-bg-card);
   color: var(--color-text);
   border: 1px solid var(--color-border);
-  border-radius: calc(var(--hdk-radius, 8px) - 2px);
+  border-radius: calc(var(--hdk-radius) - 2px);
   cursor: pointer;
   transition:
     background-color 120ms ease,
