@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
-import { ConnectedThemePicker, LoadingSkeleton } from '@wolffm/task-ui-components'
+import { AppHeader, ConnectedThemePicker, LoadingSkeleton } from '@wolffm/task-ui-components'
 import { logger } from '@wolffm/logger/client'
 import { THEME_ICON_MAP } from '@wolffm/themes'
 import { useTheme } from './hooks/useTheme'
@@ -130,12 +130,10 @@ export default function App(props: PrintToolProps = {}) {
       data-dark-theme={isDarkTheme ? 'true' : 'false'}
     >
       <div className="printtool">
-        <header className="printtool__header">
-          <h1>Hadoku Print Tool</h1>
-
-          <div className="printtool__header-actions">
-            <ApiStatus status={apiStatus} onRetry={handleRetryHealth} />
-
+        <AppHeader
+          title="Hadoku Print Tool"
+          status={<ApiStatus status={apiStatus} onRetry={handleRetryHealth} />}
+          themePicker={
             <ConnectedThemePicker
               themeFamilies={THEME_FAMILIES}
               currentTheme={theme}
@@ -145,8 +143,8 @@ export default function App(props: PrintToolProps = {}) {
                 return Icon ? <Icon /> : null
               }}
             />
-          </div>
-        </header>
+          }
+        />
 
         <main className="printtool__content">
           <ModeSelector mode={state.mode} onModeChange={setMode} />
