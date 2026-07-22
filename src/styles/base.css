@@ -66,27 +66,9 @@
   padding: 2rem;
 }
 
-.printtool__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.printtool__header h1 {
-  margin: 0;
-  color: var(--color-primary);
-  font-size: var(--hdk-text-lg);
-  font-weight: var(--font-weight-bold, 700);
-}
-
-.printtool__header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
+/* Header now comes from the shared <AppHeader> (@wolffm/task-ui-components,
+ * app-header.css). The former .printtool__header / __header-actions rules were
+ * removed when this app adopted the unified header. */
 
 .printtool__content {
   padding: 1rem;
