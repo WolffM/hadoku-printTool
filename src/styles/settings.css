@@ -168,7 +168,7 @@
 .printtool-settings__layout-label {
   font-size: var(--hdk-text-xs);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-primary);
+  color: var(--color-on-primary-bg);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }

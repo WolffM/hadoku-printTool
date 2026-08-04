@@ -288,7 +288,9 @@
 
 .printtool-image-upload__error {
   font-size: var(--hdk-text-sm);
-  color: var(--color-danger);
+  border-left: 3px solid var(--color-danger);
+  padding-left: 0.5rem;
+  color: var(--color-text);
 }
 
 .printtool-image-upload__input {
@@ -421,7 +423,7 @@
 
 .printtool-result-preview__toggle-btn--active {
   background-color: var(--color-bg-card);
-  color: var(--color-primary);
+  color: var(--color-text);
   box-shadow: var(--hdk-shadow-sm);
 }
 
