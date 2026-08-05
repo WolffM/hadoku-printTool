@@ -21,29 +21,12 @@
   --color-image-scrim-strong: rgba(0, 0, 0, 0.85);
 }
 
-/* Light themes - explicit color scheme */
-.printtool-container[data-theme='light'],
-.printtool-container[data-theme='coffee-light'],
-.printtool-container[data-theme='nature-light'],
-.printtool-container[data-theme='lavender-light'],
-.printtool-container[data-theme='strawberry-light'],
-.printtool-container[data-theme='ocean-light'],
-.printtool-container[data-theme='cyberpunk-light'],
-.printtool-container[data-theme='pink-light'] {
-  color-scheme: light;
-}
-
-/* Dark themes - explicit color scheme, tells Dark Reader not to invert */
-.printtool-container[data-theme='dark'],
-.printtool-container[data-theme='coffee-dark'],
-.printtool-container[data-theme='nature-dark'],
-.printtool-container[data-theme='lavender-dark'],
-.printtool-container[data-theme='strawberry-dark'],
-.printtool-container[data-theme='ocean-dark'],
-.printtool-container[data-theme='cyberpunk-dark'],
-.printtool-container[data-theme='pink-dark'] {
-  color-scheme: dark only; /* "only" tells Dark Reader to leave it alone */
-}
+/* No color-scheme enumeration here: @wolffm/themes >= 3.0.14 declares
+   color-scheme on every theme block, so which theme names are light and which
+   are dark is the package's business, not ours. The hand-written list this
+   replaced had gone stale — izakaya was missing, so those two themes got no
+   color-scheme at all and their scrollbars and form controls rendered for the
+   wrong mode. */
 
 /* Dark Reader detection helper */
 .printtool-container[data-dark-theme='true'] {
