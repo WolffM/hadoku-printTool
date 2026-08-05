@@ -1,8 +1,7 @@
-import { useRef, useState, useCallback, useEffect } from 'react'
-import { AppHeader, ConnectedThemePicker, LoadingSkeleton } from '@wolffm/task-ui-components'
+import { useRef, useState, useCallback, useEffect, type RefObject } from 'react'
+import { AppHeader, LoadingSkeleton, useHadokuTheme } from '@wolffm/task-ui-components'
+import { HadokuThemeRoot } from '@wolffm/themes'
 import { logger } from '@wolffm/logger/client'
-import { THEME_ICON_MAP } from '@wolffm/themes'
-import { useTheme } from './hooks/useTheme'
 import { usePrintTool } from './hooks/usePrintTool'
 import type { PrintToolProps } from './entry'
 
@@ -18,9 +17,22 @@ import { ProcessingOverlay, type ProcessingProgress } from './components/Progres
 import { getMode, type ModeActions, type ProcessingProgressUpdate } from './domain/modes'
 import { checkApiHealth } from './api/printToolApi'
 
+/**
+ * Provider boundary. Theme state is the platform's (@wolffm/themes), not this
+ * app's — the local hooks/useTheme.ts, prefs/themePrefs.ts and
+ * app/themeConfig.tsx copies are gone. AppHeader renders the shared picker
+ * from this context, so nothing below passes one.
+ */
 export default function App(props: PrintToolProps = {}) {
   const containerRef = useRef<HTMLDivElement>(null)
+  return (
+    <HadokuThemeRoot theme={props.theme} containerRef={containerRef}>
+      <AppInner containerRef={containerRef} />
+    </HadokuThemeRoot>
+  )
+}
 
+function AppInner({ containerRef }: { containerRef: RefObject<HTMLDivElement | null> }) {
   const [systemPrefersDark] = useState(() =>
     window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
   )
@@ -42,12 +54,7 @@ export default function App(props: PrintToolProps = {}) {
     void checkHealth()
   }, [checkHealth])
 
-  const { theme, setTheme, isDarkTheme, isThemeReady, isInitialThemeLoad, THEME_FAMILIES } =
-    useTheme({
-      propsTheme: props.theme,
-      experimentalThemes: false,
-      containerRef
-    })
+  const { theme, isDarkTheme, isThemeReady, isInitialThemeLoad } = useHadokuTheme()
 
   const tool = usePrintTool()
   const { state, setMode, setProcessing, setResult, setError, setCollageResult } = tool
@@ -133,17 +140,6 @@ export default function App(props: PrintToolProps = {}) {
         <AppHeader
           title="Hadoku Print Tool"
           status={<ApiStatus status={apiStatus} onRetry={handleRetryHealth} />}
-          themePicker={
-            <ConnectedThemePicker
-              themeFamilies={THEME_FAMILIES}
-              currentTheme={theme}
-              onThemeChange={setTheme}
-              getThemeIcon={(themeName: string) => {
-                const Icon = THEME_ICON_MAP[themeName as keyof typeof THEME_ICON_MAP]
-                return Icon ? <Icon /> : null
-              }}
-            />
-          }
         />
 
         <main className="printtool__content">
