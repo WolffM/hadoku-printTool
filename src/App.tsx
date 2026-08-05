@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect, type RefObject } from 'react'
-import { AppHeader, LoadingSkeleton, useHadokuTheme } from '@wolffm/task-ui-components'
+import { AppHeader, LoadingSkeleton } from '@wolffm/task-ui-components'
+import { useHadokuTheme } from '@wolffm/themes'
 import { HadokuThemeRoot } from '@wolffm/themes'
 import { logger } from '@wolffm/logger/client'
 import { usePrintTool } from './hooks/usePrintTool'
