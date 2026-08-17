@@ -122,7 +122,15 @@ jobs:
         if: steps.package_changed.outputs.changed == 'true'
         run: pnpm publish --no-git-checks
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.HADOKU_SITE_TOKEN }}
+          # The repo-local GITHUB_TOKEN (permissions: packages: write above)
+          # publishes this repo's OWN package — no PAT. HADOKU_SITE_TOKEN was
+          # rotated to minimal scopes on 2026-08-14 (repo, workflow,
+          # read:packages); the old one silently carried write:packages and
+          # publishing rode on it, which is why this step started 403ing with
+          # "The token provided does not match expected scopes". Installs and
+          # the version walk still use the PAT: cross-repo @wolffm package
+          # READS are outside GITHUB_TOKEN's repo-local grant.
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Notify parent app to update dependencies
       - name: Notify parent about package update
